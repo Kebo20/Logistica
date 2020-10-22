@@ -22,6 +22,8 @@ $lista_categorias = $olog->ListarCategoriaProducto("", 0, 1000);
             <tr>
                 <th width="">N°</th>
                 <th>Doc.</th>
+                <th>Serie</th>
+
                 <th>N° Doc.</th>
                 <th>Fecha</th>
 
@@ -56,27 +58,28 @@ $lista_categorias = $olog->ListarCategoriaProducto("", 0, 1000);
                     <input type="text" id="buscar" placeholder=" Buscar " class="form-control" onkeyup="javascript:Listar(1)" autocomplete="off" />
                     <i class="ace-icon fa fa-search nav-search-icon"></i>
                 </span></td>
-            
+
         </tr>
     </table>
 </div>
 
 
 <!--Modal Registrar -->
-<div id="ModalRegistrar" class="modal fade text-left" role="dialog">
+<div id="ModalRegistrar" class="modal fade text-left scrollable"  role="dialog">
+
         <form id="formRegistrar">
             <div class="modal-dialog " style="width: 85%;">
                 <div class="modal-content">
                     <div class="modal-header ">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title" style="color:#030"> <img src="imagenes/grupo_user.png" height="30" width="30" />
-                        &nbsp; DETALLES DE COMPRA</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" style="color:#030"> <img src="imagenes/grupo_user.png" height="30" width="30" />
+                            &nbsp; DETALLES DE COMPRA</h4>
 
 
                     </div>
-                    <div id='' class="modal-body">
+                    <div id='' class="modal-body " style="overflow-y: scroll;height: 500px;">
 
-                        <table class="table table-responsive table-bordered table-striped text-left ">
+                        <table class="table table-responsive table-bordered table-striped text-left  ">
                             <thead class='bg-secondary text-white'>
                                 <th>N°</th>
                                 <th>N° orden</th>
@@ -86,23 +89,30 @@ $lista_categorias = $olog->ListarCategoriaProducto("", 0, 1000);
                                 <th>Lote</th>
                                 <th>Cant.</th>
                                 <th>Precio</th>
+                                <th>Precio sin igv</th>
                                 <th>Monto IGV</th>
                                 <th>Subtotal</th>
                                 <th>Prec. ant.</th>
                             </thead>
-                            <tbody id="detalles"></tbody>
+
+
+                            <tbody id="detalles" >
+
+                            </tbody>
+
                         </table>
 
                     </div>
                     <div class="modal-footer">
-                        
+
                         <button class="btn btn-white btn-info btn-bold " type="reset" data-dismiss="modal">
                             <i class="ace-icon fa fa-times red2"></i>Cancelar</button>
                     </div>
                 </div>
             </div>
         </form>
-    </div>
+    
+</div>
 
 <script src='js/log_compra.js'></script>
 

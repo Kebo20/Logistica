@@ -58,40 +58,49 @@ $(document).ready(function () {
 
 //DEZPLAZAR POR FORMULARIO
 $("#OCid_cmb_suc").change(function () {
-    almacenxsucursal()
-    setTimeout(function () {
-        $("#OCid_cmb_alm").select2('open');
+    if ($("#OCid_cmb_suc").val() != "" && $("#OCvalor").val()=='2') {
+        almacenxsucursal()
+        
+    }
+    if ($("#OCid_cmb_suc").val() != "" && $("#OCvalor").val()=='1') {
+        almacenxsucursal()
+        setTimeout(function () {
+            $("#OCid_cmb_alm").select2('open');
 
-    }, 100);
+        }, 100);
+    }
+
 
 });
 
 
 
 $("#OCid_cmb_alm").change(function () {
-
+    if ($("#OCid_cmb_alm").val() != "" && $("#OCvalor").val()!='2') {
     $("#OCtipo").select2('open');
-
+    }
 
 });
 
 $("#OCtipo").change(function (e) {
+    if ($("#OCtipo").val() != "" && $("#OCvalor").val()!='2') {
     setTimeout(function () {
         $("#OCcategoria").select2('open');
         OCListarProductos()
 
     }, 100);
-
+    }
 
 });
 $("#OCcategoria").change(function (e) {
+    if ($("#OCcategoria").val() != "" && $("#OCvalor").val()!='2') {
     setTimeout(function () {
         $("#OCnro").focus();
         OCListarProductos()
 
 
     }, 100);
-
+    }
 
 });
 $("#OCnro").keypress(function (e) {
@@ -163,12 +172,10 @@ $("#OCbuscar-id_cmb_suc").change(function () {
 
 //BOTONES
 
-$("#OCbtn_guardar,#OCbtn_imprimir,#OCbtn_limpiar,#OCbtn_finalizar,#OCbtn_anular").attr("disabled", "true");
 $("input,select").attr("disabled", "true");
 $("#OCbtn_nuevo").click(function () {
     $("#OCbtn_guardar,input,select").attr("disabled", false);
     $("#OCbtn_buscar,#OCusuario").attr("disabled", "true")
-    // $("#OCid_cmb_suc").select2('open');
 
 
 });
@@ -298,7 +305,7 @@ function OCAñadirDetalle() {
             $("#OCunidad").val("");
 
             setTimeout(function () {
-                $("#OCid_cmb_pro").val("").trigger("change");
+                $("#OCid_cmb_pro").val("").change();
 
                 $("#OCid_cmb_pro").trigger('chosen:open');
             }, 300);
@@ -448,8 +455,7 @@ function OCguardar() {
         $("#OCvalor").val("1")
         console.log(data);
     });
-
-    $("#OCbtn_guardar,#OCbtn_imprimir,#OCbtn_limpiar,#OCbtn_finalizar,#OCbtn_anular,.input").attr("disabled", "true");
+    OCcancelar()
     $("#OCbtn_buscar").attr("disabled", false);
 }
 
@@ -457,20 +463,21 @@ function OCguardar() {
 function OCcancelar() {
     orden_compra = new Array();
     $("#OCnro").val("");
-    $("#OCid_cmb_suc").val("").trigger('change');
+    $("#OCid_cmb_alm").val("").html("<option value=''>Seleccione</option>");
 
+    $("#OCid_cmb_suc").val("").change();
+    $("#OCid_cmb_alm").val("").change();
 
     $("#OCreferencia").val("");
     $("#OCfecha").val("");
 
-    $("#OCtipo").val("").trigger('change');
+    $("#OCtipo").val("").change();
 
     $("#OCcantidad").val("");
     $("#OCunidad").val("");
     $("#OCvalor").val("1")
     setTimeout(function () {
-        $("#OCbtn_guardar,#OCbtn_imprimir,#OCbtn_limpiar,#OCbtn_finalizar,#OCbtn_anular").attr("disabled", "true");
-        $(".input").attr("disabled", "true");
+        $("input,select").attr("disabled", "true");
 
     }, 100);
 
@@ -557,7 +564,7 @@ function OCLlenarDatos() {
 
         id: $id
     }, function (data) {
-        console.log(data);
+        //console.log(data);
         /*$.blockUI({
             css: {
                 backgroundColor: 'white',
@@ -572,16 +579,13 @@ function OCLlenarDatos() {
         $("#OCnro").val(data.numero);
         $("#OCfecha").val(data.fecha);
         $("#OCreferencia").val(data.referencia);
-        $("#OCid_cmb_suc").val(data.id_sucursal).trigger("change");
-
+        $("#OCid_cmb_suc").val(data.id_sucursal).change();
 
         setTimeout(function () {
-            $("#OCid_cmb_alm").val(data.id_almacen).trigger("change");
-            $("#OCid_cmb_alm").select2("close");
+            $("#OCid_cmb_alm").val(data.id_almacen).change();
         }, 200);
         setTimeout(function () {
-            $("#OCtipo").val(data.tipo).trigger("change");
-            $("#OCtipo").select2("close");
+            $("#OCtipo").val(data.tipo).change();
         }, 200);
 
         setTimeout(function () {
@@ -600,7 +604,7 @@ function OCLlenarDatos() {
                     id_producto: detalles[i].id_producto,
                     nombre_producto: detalles[i].nombre,
                     cantidad: detalles[i].cantidad,
-                    unidad: detalles[i].unidad,
+                    unidad: detalles[i].nombre_unidad,
                     despachado: detalles[i].despachado,
                     pendiente: detalles[i].pendiente
                 };
@@ -611,7 +615,7 @@ function OCLlenarDatos() {
 
             OClistar();
 
-            console.log(orden_compra);
+            //console.log(orden_compra);
         }, 'JSON');
 
     }, 'JSON');

@@ -19,20 +19,22 @@ function Listar(pagina) {
             $.each(data, function (key, val) {
 
                 $("#lista").append("<tr class='todo-item'>"
-               +"<td width='5%'>" + val[0] + "</td>"
+               +"<td width='2%'>" + val[0] + "</td>"
                +"<td width='5%'>" + val[1] + "</td>"
+               +"<td width='5%'>" + val[15] + "</td>"
                +"<td width='8%'>" + val[2] + "</td>"
+
                +"<td width='5%'>" + val[3] + "</td>"
                +"<td width='5%'>" + val[5] + "</td>"
                +"<td width='10%'>" + val[6] + "</td>"
                +"<td width='5%'class='text-right'>" + val[7] + "</td>"
-               +"<td width='5%' class='text-right'>S/.  " + val[8] + "</td>"
-               +"<td width='5%' class='text-right'>" + val[9] + "</td>"
-               +"<td width='5%' class='text-right'>S/.  " + val[10] + "</td>"
-               +"<td width='5%' class='text-right'>S/. " + val[11] + "</td>"
+               +"<td width='5%' class='text-right'>S/.  " + parseFloat(val[8]).toFixed(2)  + "</td>"
+               +"<td width='5%' class='text-right'>" + parseFloat(val[9]).toFixed(2)  + "</td>"
+               +"<td width='5%' class='text-right'>S/.  " + parseFloat(val[10]).toFixed(2)  + "</td>"
+               +"<td width='5%' class='text-right'>S/. " + parseFloat(val[11]).toFixed(2) + "</td>"
                +"<td width='5%'>" + val[12] + "</td>"
                +"<td width='5%'>" + val[13] + "</td>"
-               +"<td width='5%'>" + val[14] + "</td>"
+               +"<td width='3%'>" + val[14] + "</td>"
                +"</tr>");
 
             })
@@ -51,23 +53,23 @@ function Listar(pagina) {
                         return false
                     }
                     if (pagina > 1) {
-                        $("#paginacion").append("<span class='btn btn-icon ' onclick='Listar(" + (pagina - 1) + ")' ><b><icon class='ft-chevron-left'></icon></span>");
+                        $("#paginacion").append("<span class='btn btn-xs ' onclick='Listar(" + (pagina - 1) + ")' ><b><icon class='fa fa-chevron-left'></icon></span>");
 
                     }
 
                     for (var i = 1; i <= cont; i++) {
 
-                        $("#paginacion").append("<span class='btn btn-icon ' id='pagina" + i + "' onclick='Listar(" + i + ")' >" + i + "</span>");
+                        $("#paginacion").append("<span class='btn btn-xs ' id='pagina" + i + "' onclick='Listar(" + i + ")' >" + i + "</span>");
 
                     }
 
                     if (pagina < cont) {
-                        $("#paginacion").append("<span class='btn btn-icon 'onclick='Listar(" + (pagina + 1) + ")'><b><icon class=' ft-chevron-right'></icon></span>");
+                        $("#paginacion").append("<span class='btn btn-xs 'onclick='Listar(" + (pagina + 1) + ")'><b><icon class=' fa fa-chevron-right'></icon></span>");
 
                     }
 
                     $("#pagina" + pagina).removeAttr("class");
-                    $("#pagina" + pagina).attr("class", "btn btn-dark");
+                    $("#pagina" + pagina).attr("class", "btn btn-xs btn-info");
                 },
 
                 error: function (e) {

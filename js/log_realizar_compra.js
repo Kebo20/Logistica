@@ -1,5 +1,6 @@
 $(document).ready(function () {
     $("#afecto").focus();
+    $("#td-nro_dias").hide();
     ListarAlmacenesGral()
     var $producto_select2 = $("#id_cmb_pro").select2({
         dropdownAutoWidth: true,
@@ -53,20 +54,38 @@ $(document).ready(function () {
     $("#monto_sin_igv").val("0.00");
     $("#total").val("0.00");
     $("#igv").val("0.00");
+    var IGV;
+    ObtenerIGV()
+    $('#inafecto').prop("checked", true)
+    $('#igv_detalle').prop("disabled", true)
+
 });
+
+function ObtenerIGV() {
+    $.post("controlador/Clogistica.php?op=IGV", {
+
+    }, function (data) {
+        IGV = data;
+
+    });
+}
+
 
 
 //COMPRA
 
 function llenarIGV() {
     if ($('input:radio[name=tipo_afectacion]:checked').val() == "1") {
-        $("#igv").val("0.18");
+        $("#igv").val(IGV * 100);
+        $("#igv_detalle").prop("disabled", false);
 
-        $('input:radio[name=tipo_afectacion]:checked').val()
     };
     if ($('input:radio[name=tipo_afectacion]:checked').val() == "2") {
         $("#igv").val("0.00");
+        $("#igv_detalle").prop("checked", false);
+        $("#igv_detalle").prop("disabled", true);
     };
+
     listar()
 
 }
@@ -80,14 +99,16 @@ function guardar() {
     }
 
 
-    if ($("#fecha").val() == "") {
-        swal("Campo requerido", "Inserte fecha", "warning");
-        $("#fecha").focus();
-        return false;
-    }
+
     if ($("#d_cmb_prov").val() == "") {
         swal("Campo requerido", "Seleccione un proveedor", "warning");
         $("#d_cmb_prov").focus();
+        return false;
+    }
+
+    if ($("#d_cmb_alm").val() == "") {
+        swal("Campo requerido", "Seleccione un almacen", "warning");
+        $("#d_cmb_alm").focus();
         return false;
     }
     if ($("#tipo_documento").val() == "") {
@@ -95,11 +116,23 @@ function guardar() {
         $("#tipo_documento").focus();
         return false;
     }
+    if ($("#serie").val() == "") {
+        swal("Campo requerido", "Inserte serie del documento", "warning");
+        $("#serie").focus();
+        return false;
+    }
     if ($("#nro_documento").val() == "") {
         swal("Campo requerido", "Inserte número de documento", "warning");
         $("#nro_documento").focus();
         return false;
     }
+
+    if ($("#fecha").val() == "") {
+        swal("Campo requerido", "Inserte fecha", "warning");
+        $("#fecha").focus();
+        return false;
+    }
+
 
 
 
@@ -176,7 +209,11 @@ function guardar() {
     }
 
     $("#btn_guardar").attr("disabled", true);
-
+    if ($("#igv_detalle").prop("checked")) {
+        igv_detalle = 1
+    } else {
+        igv_detalle = 0
+    }
 
     $.post("controlador/Clogistica.php?op=NUEVO_COM", {
 
@@ -185,17 +222,17 @@ function guardar() {
         proveedor: $("#id_cmb_prov").val(),
         fecha: $("#fecha").val(),
         tipo_documento: $("#tipo_documento").val(),
+        serie: $("#serie").val(),
         nro_documento: $("#nro_documento").val(),
         tipo_afectacion: $("input:radio[name=tipo_afectacion]:checked").val(),
         nota_credito: "0",
         tipo_compra: $("#tipo_compra").val(),
         nro_dias: $("#nro_dias").val(),
         id_orden: $("#orden").val(),
-        monto_igv: $("#monto_igv_total").val(),
-        igv: $("#igv").val(),
-        monto_sin_igv: $("#monto_sin_igv").val(),
-        total: $("#total").val(),
-        id_almacen: $("#id_cmb_alm").val()
+
+        id_almacen: $("#id_cmb_alm").val(),
+        igv_detalle: igv_detalle
+
     }, function (data) {
         console.log(data);
         if (data.indexOf("OK") > -1) {
@@ -203,7 +240,7 @@ function guardar() {
         } else {
             swal("Error", "Compra no registrada ", "error");
         }
-        $("#btn_guardar").attr("disabled",false);
+        $("#btn_guardar").attr("disabled", false);
 
         cancelar();
 
@@ -214,32 +251,26 @@ function guardar() {
 function cancelar() {
     compra = new Array();
     $("#monto_igv_total").val("0.00");
+    $("#monto_sin_igv").val("0.00");
+    $("#total").val("0.00");
+    $("#igv").val("0.00");
+    $("#serie").val("");
     $("#nro_documento").val("");
+    $("#id_cmb_prov").val("").change();
     $("#nro_dias").val("");
     $("#nro_lote").val("");
     $("#cantidad").val("");
     $("#precio_anterior").val("");
-    $("#monto_sin_igv").val("0.00");
-    $("#total").val("0.00");
     $("#fecha").val("");
     $("#orden").val("");
     $("#fecha_vencimiento").val("");
-    //        $("#igv").val("");
-    /* setTimeout(function() {
-         $("#id_cmb_pro").val("").trigger('chosen:updated');
-     }, 200);
-     setTimeout(function() {
-         $("#id_cmb_prov").val("").trigger('chosen:updated');
-     }, 200);
-     setTimeout(function() {
-         $("#tipo_documento").val("").trigger('chosen:updated');
-     }, 200);
-     setTimeout(function() {
-         $("#tipo_compra").val("").trigger('chosen:updated');
-     }, 200);
-     setTimeout(function() {
-         $("#bonificacion").val("").trigger('chosen:updated');
-     }, 200);*/
+    $("#id_cmb_suc").val("").change();
+    $("#id_cmb_alm").html("<option value=''>Seleccione </option>");
+    $("#id_cmb_alm").val("").change();
+    $("#tipo_documento").val("").change();
+    $("#tipo_compra").val("").change();
+    $("#id_cmb_suc").prop("disabled",false);
+    $("#id_cmb_alm").prop("disabled",false);
     listar();
 }
 
@@ -270,17 +301,17 @@ function listar() {
         }
 
         //Calculo del IGV
-        //.toFixed(2) RECORTA A DOS DECIMALES SIN REDONDEAR INCLUIDO ENTEROS .00
         if ($("#igv_detalle").prop("checked")) {
-            compra[i].precio_sin_igv = (Math.round((compra[i].precio * (100 / 118)) * 100) / 100).toFixed(2);
-            compra[i].monto_igv = (Math.round(compra[i].precio * (18 / 118) * 100) / 100).toFixed(2);
-            //compra[i].subtotal = (Math.round((compra[i].precio_sin_igv * compra[i].cantidad) * 100) / 100).toFixed(2);
-            compra[i].subtotal = (Math.round((parseFloat(compra[i].precio_sin_igv) + parseFloat(compra[i].monto_igv)) * 100) / 100).toFixed(2);;
+            compra[i].monto_igv = (compra[i].precio * IGV / (1 + parseFloat(IGV))).toFixed(2);
+            compra[i].precio_sin_igv = (compra[i].precio - compra[i].monto_igv).toFixed(2);
+            compra[i].subtotal = ((parseFloat(compra[i].precio) * compra[i].cantidad)).toFixed(2);
+            $("#th-subtotal").html("Subtotal con igv")
         } else {
-            compra[i].precio_sin_igv = (Math.round(compra[i].precio * 100) / 100).toFixed(2);
-            compra[i].monto_igv = (Math.round(compra[i].precio * (0.18) * 100) / 100).toFixed(2);
-            //compra[i].subtotal = (Math.round((parseFloat(compra[i].precio_sin_igv * compra[i].cantidad)) * 100) / 100).toFixed(2);
-            compra[i].subtotal = (Math.round((parseFloat(compra[i].precio_sin_igv) + parseFloat(compra[i].monto_igv)) * 100) / 100).toFixed(2);;
+            compra[i].monto_igv = (compra[i].precio * IGV).toFixed(2);
+            compra[i].precio_sin_igv = (compra[i].precio * 1).toFixed(2);
+            compra[i].subtotal = ((parseFloat(compra[i].precio) * compra[i].cantidad)).toFixed(2);
+            $("#th-subtotal").html("Subtotal sin igv")
+
         }
 
         if (compra[i].bonificacion == '0') {
@@ -301,37 +332,53 @@ function listar() {
                 <td width='3%'  style='text-align:left;'>" + orden + "</td>\n\
             <td width='3%'>" + parseInt(i + 1) + "</td>\n\
             <td width='18%' style='text-align:left;'>" + compra[i].nombre_producto + "</td>\n\
-            <td width='14%' style='text-align:left;'><input type='date' style='width:100%' class='form-control' onchange=\"ModificarDetalleVencimiento(" + i + ")\" id='" + i + "_fecha_vencimiento' value='" + compra[i].fecha_vencimiento + "'> </td>\n\
+            <td width='10%' style='text-align:left;'><input type='date' style='width:100%' class='form-control' onchange=\"ModificarDetalleVencimiento(" + i + ")\" id='" + i + "_fecha_vencimiento' value='" + compra[i].fecha_vencimiento + "'> </td>\n\
             <td width='8%' style='text-align:left;'> " + nro_lote_input + "</td>\n\
             <td width='8%' align='center'> " + compra[i].cantidad_orden + "</td>\n\
             <td width='8%' align='center'> <input '  type='number'  style='width:100%' class='form-control text-right entero'  onchange=\"ModificarDetalleCantidad(" + i + ")\" id='" + i + "_cantidad'  value='" + compra[i].cantidad + "'></td>\n\
             <td width='8%' align='center'> <input type='number' style='width:100%' class='form-control text-right' onchange=\"ModificarDetallePrecio(" + i + ")\" id='" + i + "_precio'  value='" + compra[i].precio + "'></td>\n\
-            <td width='8%' align='right'>S/. " + compra[i].precio_sin_igv + "</td>\n\
-            <td width='8%' align='right'>S/. " + compra[i].monto_igv + "</td>\n\
-            <td width='8%' align='right'>S/. " + compra[i].subtotal + "</td>\n\
+            <td width='12%' align='right'>S/. " + compra[i].precio_sin_igv + "</td>\n\
+            <td width='12%' align='right'>S/. " + compra[i].subtotal + "</td>\n\
             <td width='3%'> " + bonificacion + "</td></tr>");
-        console.log(compra[i]);
-    }
-
-
-    igv = $("#igv").val();
-
-    if (igv != 0) {
-        $("#monto_sin_igv").val(((Math.round((stotal) * 100) / 100) / 1.18).toFixed(2));
-        monto_sin_igv = $("#monto_sin_igv").val();
-    } else {
-        $("#monto_sin_igv").val(((Math.round((stotal) * 100) / 100)).toFixed(2));
-        monto_sin_igv = $("#monto_sin_igv").val();
     }
 
 
 
-    $("#monto_igv_total").val((parseFloat(stotal - monto_sin_igv)).toFixed(2));
-    monto_igv_total = $("#monto_igv_total").val();
 
 
-    total = (Math.round((parseFloat(stotal) * 100) / 100).toFixed(2));
-    $("#total").val(total);
+    if ($('input:radio[name=tipo_afectacion]:checked').val() == "1" && $("#igv_detalle").prop("checked")) {
+
+        total = stotal
+        monto_igv_total = total * IGV / (1 + parseFloat(IGV))
+        monto_sin_igv = total - monto_igv_total
+        $("#monto_sin_igv").val(monto_sin_igv.toFixed(2))
+        $("#inafecta").val("0.00")
+        $("#monto_igv_total").val(monto_igv_total.toFixed(2));
+        $("#total").val(total.toFixed(2))
+    }
+
+    if ($('input:radio[name=tipo_afectacion]:checked').val() == "1" && !$("#igv_detalle").prop("checked")) {
+
+        monto_sin_igv = stotal
+        monto_igv_total = monto_sin_igv * IGV
+        total = monto_sin_igv + monto_igv_total
+        $("#monto_sin_igv").val(monto_sin_igv.toFixed(2))
+        $("#inafecta").val("0.00")
+        $("#monto_igv_total").val(monto_igv_total.toFixed(2));
+        $("#total").val(total.toFixed(2))
+    }
+    if ($('input:radio[name=tipo_afectacion]:checked').val() == "2") {
+
+        monto_sin_igv = stotal
+        monto_igv_total = 0
+        total = monto_sin_igv + monto_igv_total
+        $("#monto_sin_igv").val("0.00")
+        $("#inafecta").val(monto_sin_igv.toFixed(2))
+        $("#monto_igv_total").val(monto_igv_total.toFixed(2));
+        $("#total").val(total.toFixed(2))
+    }
+
+
 }
 
 
@@ -349,10 +396,7 @@ function ModificarDetalleBonificacion($fila) {
     } else {
         compra[$fila].bonificacion = '0'
     }
-
-
     listar()
-
 
 }
 
@@ -366,6 +410,15 @@ function ModificarDetalleVencimiento($fila) {
 }
 
 function ModificarDetalleLote($fila) {
+    for (var i = 0; i < compra.length; i++) {
+
+        if (compra[i].nro_lote == $("#" + $fila + "_lote").val() && compra[i].id_producto == compra[$fila].id_producto) {
+            $("#" + $fila + "_lote").val("")
+            swal("Lote " + compra[i].nro_lote + " ya ingresado", compra[i].nombre_producto, "info")
+
+            return false;
+        }
+    }
 
     compra[$fila].nro_lote = $("#" + $fila + "_lote").val()
     listar()
@@ -384,30 +437,21 @@ function ModificarDetallePrecio($fila) {
 function ModificarDetalleCantidad($fila) {
 
     compra[$fila].cantidad = $("#" + $fila + "_cantidad").val()
-    //console.log(compra[$fila].cantidad)
-    //console.log(compra[$fila].cantidad_orden)
 
-
-    //comprobacion del total de la orden
+    //Cantidad total del producto no exceda la orden
     cantidad_total = 0;
-
     for (var i = 0; i < compra.length; i++) {
         if (compra[i].id_producto == compra[$fila].id_producto && compra[$fila].orden == '1') {
             cantidad_total += parseInt(compra[i].cantidad)
         }
-
     }
 
     if (parseInt(cantidad_total) > parseInt(compra[$fila].cantidad_orden)) {
         compra[$fila].cantidad = 0;
         swal("Cantidad execede a la orden", "", "error")
-
     }
 
-
-
     listar()
-
 
 }
 
@@ -421,15 +465,12 @@ function Dividir(fila, cantidad_orden, id_producto, nombre_producto, tipo_produc
     $("#dividir-cantidad_orden").val(cantidad_orden)
     $("#dividir-fila").val(fila)
 
-
     dividir = new Array()
     DividirListar()
-
 
 }
 
 function AñadirDetalle() {
-
 
     if ($("#id_cmb_pro").val() == "") {
         swal("Campo requerido", "Seleccione un producto", "warning");
@@ -515,10 +556,10 @@ function AñadirDetalle() {
     //        $("#precio_anterior").val("0.00");
     $("#fecha_vencimiento").val("");
     setTimeout(function () {
-        $("#bonificacion").val("").trigger('chosen:updated');
+        $("#bonificacion").val("").change();
     }, 200);
     setTimeout(function () {
-        $("#id_cmb_pro").val("").trigger('chosen:updated');
+        $("#id_cmb_pro").val("").change();
     }, 200);
     setTimeout(function () {
         $("#id_cmb_pro").select2('open');
@@ -540,10 +581,9 @@ function eliminar(id) {
 dividir = new Array()
 
 function DividirAñadirDetalle() {
-
-    if ($("#dividir-fecha_vencimiento").val() == "") {
-        swal("Campo requerido", "Inserte una fecha", "warning");
-        $("#dividir-fecha_vencimiento").focus();
+    if ($("#dividir-precio").val() == "") {
+        swal("Campo requerido", "Inserte un precio", "warning");
+        $("#dividir-precio").focus();
         return false;
     }
     if ($("#dividir-cantidad").val() == "") {
@@ -551,11 +591,12 @@ function DividirAñadirDetalle() {
         $("#dividir-cantidad").focus();
         return false;
     }
-    if ($("#dividir-precio").val() == "") {
-        swal("Campo requerido", "Inserte un precio", "warning");
-        $("#dividir-precio").focus();
+    if ($("#dividir-fecha_vencimiento").val() == "") {
+        swal("Campo requerido", "Inserte una fecha", "warning");
+        $("#dividir-fecha_vencimiento").focus();
         return false;
     }
+   
     if ($("#dividir-bonificacion").val() == "") {
         swal("Campo requerido", "Seleccione bonificación", "warning");
         $("#dividir-bonificacion").focus();
@@ -600,9 +641,6 @@ function DividirAñadirDetalle() {
             dividir[i].cantidad = parseInt(dividir[i].cantidad) + parseInt(cantidad);
             DividirListar();
 
-            $("#dividir-cantidad").val("");
-            $("#dividir-unidad").val("");
-
 
             return false;
         }
@@ -625,6 +663,14 @@ function DividirAñadirDetalle() {
         nro_lote: nro_lote
     };
     dividir.push(detalle);
+    $("#dividir-cantidad").val("");
+    $("#dividir-precio").val("")
+    $("#dividir-fecha_vencimiento").val("")
+    $("#dividir-nro_lote").val("")
+    $("#dividir-unidad").val("");
+    $("#dividir-bonificacion").val("")
+
+
     DividirListar();
 
 
@@ -650,22 +696,21 @@ function DividirListar() {
         //Calculo del IGV
         //.toFixed(2) RECORTA A DOS DECIMALES SIN REDONDEAR INCLUIDO ENTEROS .00
         if ($("#igv_detalle").prop("checked")) {
-            dividir[i].precio_sin_igv = (Math.round((dividir[i].precio * (100 / 118)) * 100) / 100).toFixed(2);
-            dividir[i].monto_igv = (Math.round(dividir[i].precio * (18 / 118) * 100) / 100).toFixed(2);
-            //dividir[i].subtotal = (Math.round((dividir[i].precio_sin_igv * dividir[i].cantidad) * 100) / 100).toFixed(2);
-            dividir[i].subtotal = (Math.round((parseFloat(dividir[i].precio_sin_igv) + parseFloat(dividir[i].monto_igv)) * 100) / 100).toFixed(2);;
+            dividir[i].monto_igv = (dividir[i].precio * IGV / (1 + parseFloat(IGV))).toFixed(2);
+
+            dividir[i].precio_sin_igv = (dividir[i].precio - dividir[i].monto_igv).toFixed(2);
+            dividir[i].subtotal = ((parseFloat(dividir[i].precio) * dividir[i].cantidad)).toFixed(2);
 
         } else {
-            dividir[i].precio_sin_igv = (Math.round(dividir[i].precio * 100) / 100).toFixed(2);
-            dividir[i].monto_igv = (Math.round(dividir[i].precio * (0.18) * 100) / 100).toFixed(2);
-            //dividir[i].subtotal = (Math.round((parseFloat(dividir[i].precio_sin_igv * dividir[i].cantidad)) * 100) / 100).toFixed(2);
-            dividir[i].subtotal = (Math.round((parseFloat(dividir[i].precio_sin_igv) + parseFloat(dividir[i].monto_igv)) * 100) / 100).toFixed(2);;
+            dividir[i].precio_sin_igv = (dividir[i].precio * 1).toFixed(2);
+            dividir[i].monto_igv = (dividir[i].precio * IGV).toFixed(2);
+            dividir[i].subtotal = ((parseFloat(dividir[i].precio) * dividir[i].cantidad)).toFixed(2);
 
         }
 
 
 
-        $("#IdCuerpoCD-dividir").append("<tr><td width='3%' class='text-left'><span class=' text-left' onclick='DividirEliminar(" + i + ")'><icon class='ft-trash'></icon></span></td>\n\
+        $("#IdCuerpoCD-dividir").append("<tr><td width='3%' class='text-left'><span class=' text-left' onclick='DividirEliminar(" + i + ")'><icon class='fa fa-trash'></icon></span></td>\n\
                 <td width='3%'  style='text-align:left;'>" + orden + "</td>\n\
             <td width='3%'>" + parseInt(i + 1) + "</td>\n\
             <td width='10%' style='text-align:left;'>" + dividir[i].nombre_producto + "</td>\n\
@@ -784,7 +829,6 @@ function PintarFilaECOC($id) {
     $("#" + $id).css("background-color", "#6FA0B9")
     $("#" + $id).css("color", "white")
 
-
     $("#IdFilaECOC").val($id);
     ECLlenarOrdenDetalle($id);
 }
@@ -801,7 +845,7 @@ function SeleccionarAlmacenxOrden_Compra(id_orden) {
     $.post("controlador/Clogistica.php?op=ALMxORD_COMPRA", { id_orden: id_orden }, function (data) {
 
         $("#id_cmb_alm").val(data).change();
-        
+
 
     })
 }
@@ -815,13 +859,13 @@ function LlenarDatos() {
         swal("Debe seleccionar un Registro", "Obligatorio", "warning");
         return false;
     }
-    
+
     ListarAlmacenesGral()
-    
+
     $.post("controlador/Clogistica.php?op=LLENAR_ORD_COM_DET", {
         id: $id
     }, function (detalles) {
-        console.log(detalles)
+        //console.log(detalles)
 
         compra = new Array();
         $("#orden").val($id)
@@ -854,13 +898,15 @@ function LlenarDatos() {
             };
             if (detalles[i].pendiente > 0) {
                 compra.push(compra_detalle);
+                listar();
+                $("#ECModalOrdenCompra").modal('hide');
+            }else{
+                swal("Orden sin pendientes", "seleccione otro registro", "warning");
             }
 
         }
 
-        listar();
-        $("#ECModalOrdenCompra").modal('hide');
-        console.log(compra);
+       
     }, 'JSON');
 
 
@@ -878,6 +924,8 @@ function ClickAfecto() {
 }
 
 function ClickInafecto() {
+
+
     setTimeout(function () {
         $("#id_cmb_prov").select2('open');
     }, 200);
@@ -885,42 +933,57 @@ function ClickInafecto() {
 
 
 function ChangeProv() {
-    setTimeout(function () {
-        $("#id_cmb_suc").select2('open');
-    }, 200);
+    if ($("#id_cmb_prov").val() != "" && !$("#id_cmb_suc").attr("disabled")) {
+        setTimeout(function () {
+            $("#id_cmb_suc").select2('open');
+        }, 200);
+    }
+
 }
 
 function ChangeSucursal() {
+    if ($("#id_cmb_suc").val() != "" && !$("#id_cmb_alm").attr("disabled")) {
+        $("#id_cmb_alm").html("");
 
-    //$("#id_cmb_alm").val("").trigger('change');
-    $("#id_cmb_alm").html("");
+        $.post("controlador/Clogistica.php?op=LISTAR_ALM_GRALxSUC", {
+            sucursal: $("#id_cmb_suc").val(),
 
-    $.post("controlador/Clogistica.php?op=LISTAR_ALM_GRALxSUC", {
-        sucursal: $("#id_cmb_suc").val(),
+        }, function (data) {
 
-    }, function (data) {
+            $("#id_cmb_alm").html(data);
 
-        $("#id_cmb_alm").html(data);
 
-    });
+            setTimeout(function () {
+                $("#id_cmb_alm").select2('open');
 
-    setTimeout(function () {
-        $("#id_cmb_alm").select2('open');
+            }, 200);
 
-    }, 200);
+
+        });
+    }
 
 }
 function ChangeAlmacen() {
-
-    $("#tipo_documento").select2('open');
+    if ($("#id_cmb_alm").val() != "" && !$("#id_cmb_alm").prop("disabled")) {
+        $("#tipo_documento").select2('open');
+    }
 }
 
 
 function ChangeTipoDoc() {
-    setTimeout(function () {
-        $("#nro_documento").focus();
-    }, 200);
+    if ($("#tipo_documento").val() != "") {
+        setTimeout(function () {
+            $("#serie").focus();
+        }, 200);
+    }
 }
+$("#serie").keypress(function (e) {
+    if (e.which == 13) {
+        setTimeout(function () {
+            $("#nro_documento").focus();
+        }, 200);
+    }
+});
 
 $("#nro_documento").keypress(function (e) {
     if (e.which == 13) {
@@ -928,30 +991,32 @@ $("#nro_documento").keypress(function (e) {
     }
 });
 
-function ChangeFecha(e) {
+$("#fecha").keypress(function (e) {
 
-
-    setTimeout(function () {
-        $("#tipo_compra").select2('open');
-    }, 200);
-
-}
-
-function ChangeTipoCompra() {
-    if ($("#tipo_compra").val() == 'Contado') {
-        $("#td-nro_dias").hide();
-        $("#igv_detalle").focus();
+    if (e.which == 13) {
         setTimeout(function () {
-            $("#id_cmb_pro").select2('open');
-        }, 200);
-    } else {
-        $("#td-nro_dias").show();
-        setTimeout(function () {
-            $("#nro_dias").focus();
+            $("#tipo_compra").select2('open');
         }, 200);
     }
 
+});
 
+function ChangeTipoCompra() {
+    if ($("#tipo_compra").val() != "") {
+        if ($("#tipo_compra").val() == 'Contado') {
+            $("#td-nro_dias").hide();
+            $("#igv_detalle").focus();
+            setTimeout(function () {
+                $("#id_cmb_pro").select2('open');
+            }, 200);
+        } else {
+            $("#td-nro_dias").show();
+            setTimeout(function () {
+                $("#nro_dias").focus();
+            }, 200);
+        }
+
+    }
 
 }
 
@@ -971,25 +1036,28 @@ function ClickIGV() {
 }
 
 function ChangeProducto() {
+    if ($("#id_cmb_pro").val() != '') {
+        $.post("controlador/Clogistica.php?op=PRECIO_COMPRA_ULTIMO", {
 
-    $.post("controlador/Clogistica.php?op=PRECIO_COMPRA_ULTIMO", {
+            id: $("#id_cmb_pro").val()
+        }, function (data) {
+            if (!data) {
+                $("#precio_anterior").val("0.00");
+            } else {
+                $("#precio_anterior").val(data);
+            }
 
-        id: $("#id_cmb_pro").val()
-    }, function (data) {
-        if (!data.precio_sin_igv) {
+            //console.log(data);
+        }, "JSON").fail(function () {
             $("#precio_anterior").val("0.00");
-        } else {
-            $("#precio_anterior").val(data.precio_sin_igv);
-        }
+        });
 
-        console.log(data);
-    }, "JSON").fail(function () {
-        $("#precio_anterior").val("0.00");
-    });
+        setTimeout(function () {
+            $("#precio").focus()
+        }, 200);
+    }
 
-    setTimeout(function () {
-        $("#precio").focus()
-    }, 200);
+
 }
 
 
@@ -1004,22 +1072,32 @@ $("#cantidad").keypress(function (e) {
         $("#fecha_vencimiento").focus();
     }
 })
-function ChangeFechaVenc(e) {
 
-    $("#nro_lote").focus();
 
-}
+$("#fecha_vencimiento").keypress(function (e) {
 
+    if (e.which == 13) {
+       
+            $("#nro_lote").focus();
+       
+    }
+
+});
 $("#nro_lote").keypress(function (e) {
     if (e.which == 13) {
         setTimeout(function () {
             $("#bonificacion").select2('open');
+
         }, 200);
     }
 })
 
 function ChangeBonificacion() {
-    AñadirDetalle();
+
+    if ($("#bonificacion").val() != '') {
+        AñadirDetalle();
+    }
+
 }
 
 $(document).keydown(function (tecla) {

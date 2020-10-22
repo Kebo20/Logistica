@@ -161,7 +161,7 @@ date_default_timezone_set('America/Lima');
 			} catch (e) {}
 		</script>
 
-		<div id="sidebar" class="sidebar      h-sidebar                navbar-collapse collapse          ace-save-state">
+		<div id="sidebar" class="sidebar  h-sidebar  navbar-collapse collapse  ace-save-state">
 			<script type="text/javascript">
 				try {
 					ace.settings.loadState('sidebar')
@@ -169,7 +169,6 @@ date_default_timezone_set('America/Lima');
 			</script>
 
 			<div class="sidebar-shortcuts" id="sidebar-shortcuts">
-
 				<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
 					<span class="btn btn-success" onClick="DashboardModal()"></span>
 
@@ -182,7 +181,28 @@ date_default_timezone_set('America/Lima');
 			</div><!-- /.sidebar-shortcuts -->
 
 
-			<ul class="nav nav-list" id="IdMenu" style="margin:0; padding:0">
+			<ul class="nav nav-list" id="IdMenu">
+				<li class="hover" id="2" onClick="Activar('2');AbrirCaja();">
+
+					<a href="#" class="dropdown-toggle">
+						<i class="menu-icon"><img src="imagenes/abrir_caja.png" style="border:0" height="25" width="25"></i>
+						<span class="menu-text" style="font-size:10px; font-weight:bold"> ABRIR CAJA </span>
+					</a>
+				</li>
+				<li class="hover" id="3" onClick="Activar('3');CerrarCaja();">
+
+					<a href="#" class="dropdown-toggle">
+						<i class="menu-icon"><img src="imagenes/cerrar_caja.png" style="border:0" height="25" width="25"></i>
+						<span class="menu-text" style="font-size:10px; font-weight:bold"> CERRAR CAJA </span>
+					</a>
+				</li>
+				<li class="hover" id="4" onClick="Activar('4');Egresos();">
+
+					<a href="#" class="dropdown-toggle">
+						<i class="menu-icon"><img src="imagenes/egresos.png" style="border:0" height="25" width="25"></i>
+						<span class="menu-text" style="font-size:10px; font-weight:bold">EGRESOS</span>
+					</a>
+				</li>
 				<li class="hover" id="1" onClick="Activar('1');">
 
 					<a href="#" class="dropdown-toggle">
@@ -301,22 +321,33 @@ date_default_timezone_set('America/Lima');
 					</a>
 					<b class="arrow"></b>
 				</li>
-				<li class="hover" id="15" onClick="Activar('15');RealizarCompra();">
-					<a href="#">
-						<i class="menu-icon" style="margin:0; padding:0">
-							<img src="imagenes/realizar_compra.png" style="border:0" height="30" width="30"></i>
-						<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">REALIZAR COMPRA</span>
-					</a>
-					<b class="arrow"></b>
-				</li>
-				<li class="hover" id="16" onClick="Activar('16');Compras();">
+				<li class="hover" id="15" onClick="Activar('15');">
 					<a href="#">
 						<i class="menu-icon" style="margin:0; padding:0">
 							<img src="imagenes/compras.png" style="border:0" height="30" width="30"></i>
-						<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">COMPRAS </span>
+						<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">COMPRAS</span>
 					</a>
 					<b class="arrow"></b>
+					<ul class="submenu">
+						<li class="hover" id="" onClick="Activar('15');RealizarCompra();">
+							<a href="#">
+								<i class="menu-icon fa fa-caret-right" style="margin:0; padding:0"></i>
+								<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">REALIZAR</span>
+							</a>
+
+							<b class="arrow"></b>
+						</li>
+						<li class="hover" id="" onClick="Activar('15');Compras();">
+							<a href="#">
+								<i class="menu-icon fa fa-caret-right" style="margin:0; padding:0"></i>
+								<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">LISTAR</span>
+							</a>
+
+							<b class="arrow"></b>
+						</li>
+					</ul>
 				</li>
+
 				<li class="hover" id="17" onClick="Activar('17');OrdenDocumento();">
 					<a href="#">
 						<i class="menu-icon" style="margin:0; padding:0">

@@ -9,7 +9,16 @@ session_start();
 $olog = new Logistica();
 
 switch ($_GET["op"]) {
+
+    case "IGV":
+        echo $olog->IGV;
+        break;
+    case "I":
+        echo round(9.74,1, PHP_ROUND_HALF_UP);
+        break;
+
         //ALMACEN
+
     case "LIS_ALM":
         $datos = array();
         $pagina = $_GET["pagina"];
@@ -68,7 +77,7 @@ switch ($_GET["op"]) {
         $sucursal = $_POST['sucursal'];
 
         $listar = $olog->ListarAlmacenxSucursal($sucursal);
-        $opt = "<option value=''>Seleccione</option>";
+        $opt = "<option value=' '>Seleccione</option>";
         foreach ($listar as $a) {
 
             if ($a["tipo"] == '0') {
@@ -585,8 +594,6 @@ switch ($_GET["op"]) {
     case 'LLENAR_ORD_COM_DET':
         $id = $_POST['id'];
 
-        //$orden_compra = $olog->ListarOrdenCompraxId($id)->fetch();
-
         $listar = $olog->ListarOrdenComprDetalles($id);
 
         echo json_encode($listar->fetchAll());
@@ -611,32 +618,29 @@ switch ($_GET["op"]) {
         $proveedor = $_POST['proveedor'];
         $tipo_documento = $_POST['tipo_documento'];
         $tipo_afectacion = $_POST['tipo_afectacion'];
-        $monto_sin_igv = $_POST['monto_sin_igv'];
-        $igv = $_POST['igv'];
-        $monto_igv = $_POST['monto_igv'];
-        $total = $_POST['total'];
         $nota_credito = $_POST['nota_credito'];
         $tipo_compra = $_POST['tipo_compra'];
         $nro_dias = $_POST['nro_dias'];
+        $serie = $_POST['serie'];
+
         $nro_documento = $_POST['nro_documento'];
         $id_orden = $_POST['id_orden'];
         $id_almacen = $_POST['id_almacen'];
+        $igv_detalle = $_POST['igv_detalle'];
         $insertar = $olog->RegistrarCompra(
             $detalles_compra,
             $fecha,
             $proveedor,
             $tipo_documento,
             $tipo_afectacion,
-            $monto_sin_igv,
-            $igv,
-            $monto_igv,
-            $total,
             $nota_credito,
             $tipo_compra,
+            $serie,
             $nro_documento,
             $nro_dias,
             $id_orden,
-            $id_almacen
+            $id_almacen,
+            $igv_detalle
         );
 
         echo $insertar;
@@ -678,10 +682,14 @@ switch ($_GET["op"]) {
             $subArray[] = $prov[8];
             $subArray[] = $prov[12];
             $subArray[] = $prov[14];
+           
+            
+
+
             $subArray[] = "<div align='center'>
                 <a  onclick=\"detalles('" . $prov["id"] . "')\" ><i class=' fa fa-search-plus' ></i> </a>";
 
-
+                $subArray[] = $prov[15];
             $datos[] = $subArray;
         }
 
@@ -733,10 +741,11 @@ switch ($_GET["op"]) {
                 . "<td align='center'>$c[5] </td>"
                 . "<td class='text-right'>$c[13]  </td>"
                 . "<td class='text-right'>$c[7]  </td>"
+                . "<td class='text-right'>S/." . $c['precio'] . "  </td>"
                 . "<td class='text-right'>S/." . $c[8] . "  </td>"
                 . "<td class='text-right' >S/." . $c[9] . "  </td>"
-                . "<td class='text-right'>S/." . $c[10] . "  </td>"
-                . "<td class='text-right'>S/." . $c[11] . "  </td>"
+                . "<td class='text-right'>S/." .  $c[10] . "  </td>"
+                . "<td class='text-right'>S/." .  $c[11] . "  </td>"
                 . "</tr>";
         }
 
@@ -747,8 +756,9 @@ switch ($_GET["op"]) {
     case 'PRECIO_COMPRA_ULTIMO':
         $id = $_POST['id'];
 
-        $listar = $olog->UltimaPrecioCompra($id);
-        echo json_encode($listar->fetch());
+        $precio = $olog->UltimaPrecioCompra($id);
+        // $precio=$olog->redondear_dos_decimal($precio);
+        echo $precio;
         break;
 
         //PROVEEDOR
@@ -1159,7 +1169,7 @@ switch ($_GET["op"]) {
             $subArray[] = $kardex[7];
             $subArray[] = $kardex[8];
             $subArray[] = $kardex[9];
-     
+
             if ($kardex['tipo_movimiento'] == 1) {
                 $cantidad_final = $cantidad_final + $kardex['cantidad'];
                 $costo_total_final = $costo_total_final + $kardex['costo_total'];

@@ -38,8 +38,8 @@
     outline: 0;
     
 }
-.input:focus,span:focus,.select2-search__field:focus{
-  border: 0.2px solid #da9c17 !important ;
+input:focus,select:focus,.input:focus,span:focus,.select2-search__field:focus{
+  border: 0.2px solid #5CB3ED !important ;
   box-shadow: none  !important ;
   outline: none  !important ;
 }

@@ -41,23 +41,23 @@ function Listar(pagina) {
                         return false
                     }
                     if (pagina > 1) {
-                        $("#paginacion").append("<span class='btn btn-icon ' onclick='Listar(" + (pagina - 1) + ")' ><b><icon class='ft-chevron-left'></icon></span>");
+                        $("#paginacion").append("<span class='btn btn-xs ' onclick='Listar(" + (pagina - 1) + ")' ><b><icon class='fa fa-chevron-left'></icon></span>");
 
                     }
 
                     for (var i = 1; i <= cont; i++) {
 
-                        $("#paginacion").append("<span class='btn btn-icon ' id='pagina" + i + "' onclick='Listar(" + i + ")' >" + i + "</span>");
+                        $("#paginacion").append("<span class='btn btn-xs ' id='pagina" + i + "' onclick='Listar(" + i + ")' >" + i + "</span>");
 
                     }
 
                     if (pagina < cont) {
-                        $("#paginacion").append("<span class='btn btn-icon 'onclick='Listar(" + (pagina + 1) + ")'><b><icon class=' ft-chevron-right'></icon></span>");
+                        $("#paginacion").append("<span class='btn btn-xs 'onclick='Listar(" + (pagina + 1) + ")'><b><icon class='fa fa-chevron-right'></icon></span>");
 
                     }
 
                     $("#pagina" + pagina).removeAttr("class");
-                    $("#pagina" + pagina).attr("class", "btn btn-dark");
+                    $("#pagina" + pagina).attr("class", "btn btn-xs btn-info");
                 },
 
                 error: function (e) {
