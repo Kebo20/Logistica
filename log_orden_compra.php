@@ -111,7 +111,7 @@ $lista_categorias = $olog->ListarCategoriaProducto('', 0, 1000);
 
 
         <tr>
-            <td width="60%"><b>Producto</b><br>
+            <td width="50%"><b>Producto</b><br>
 
                 <select id="OCid_cmb_pro" class='form-control' style="width: 95%">
                     <option value="">Seleccione </option>
@@ -124,7 +124,7 @@ $lista_categorias = $olog->ListarCategoriaProducto('', 0, 1000);
             <td width="10%"><b>Cantidad</b><br>
                 <input type="text" id="OCcantidad" value="" style="width:95%" class="input numero" autocomplete="off">
             </td>
-            <td width="10%"><b>Unidad</b><br>
+            <td width="20%"><b>Unidad</b><br>
                 <input type="text" id="OCunidad" readonly value="" style="width:95%" class='input' autocomplete="off">
             </td>
             <td width="10%"><b>Stock</b><br>
