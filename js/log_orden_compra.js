@@ -362,7 +362,6 @@ function LlenarStockUnidad() {
 
 function OCListarProductos() {
 
-
     $.post("controlador/Clogistica.php?op=LISTAR_PRO_OC", {
         tipo: $("#OCtipo").val(),
         categoria: $("#OCcategoria").val()

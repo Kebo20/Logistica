@@ -203,7 +203,7 @@ function Fraccionar() {
         }
 
         Limpiar()
-        //console.log(data);
+        console.log(data);
         
         $("#FLbtn_guardar").attr("disabled", false)
 

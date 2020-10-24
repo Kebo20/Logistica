@@ -1,10 +1,7 @@
 <?php
 
 require_once('conexion.php');
-//MYSQL
-//limit $inicio,$numero_filas
-//SQLserver
-//limit $inicio,$numero_filas
+
 class Logistica
 {
     public $IGV = 0.18;
@@ -1003,13 +1000,13 @@ class Logistica
     function ListarKardex($id_producto, $inicio, $numero_filas)
     {
         $ocado = new cado();
-        $sql = "SELECT k.fecha,td.descripcion,k.nro_doc,k.id_tipo_operacion,IF(k.tipo_movimiento=1,k.cantidad,'') as cantidad_entrada,
+        $sql = "SELECT k.fecha,IF(td.descripcion!='',td.descripcion,'-'),k.nro_doc,k.id_tipo_operacion,IF(k.tipo_movimiento=1,k.cantidad,'') as cantidad_entrada,
         IF(k.tipo_movimiento=1,cast(precio as decimal(18,2)),'0.00') as precio_entrada, IF(k.tipo_movimiento=1,cast(costo_total as decimal(18,2)),'0.00') as costo_total_entrada, 
         IF(k.tipo_movimiento=2,k.cantidad,'') as cantidad_salida,IF(k.tipo_movimiento=2,cast(precio as decimal(18,2)),'0.00') as precio_salida, 
         IF(k.tipo_movimiento=2,cast(costo_total as decimal(18,2)),'0.00') as costo_total_salida ,k.tipo_movimiento,k.cantidad,k.costo_total
        
        FROM log_kardex k
-       INNER JOIN log_tipo_documento td on k.id_tipo_documento=td.id
+       LEFT JOIN log_tipo_documento td on k.id_tipo_documento=td.id
        where k.id_producto=$id_producto order by k.fecha asc ,k.id asc    ";
         $listar = $ocado->ejecutar($sql);
         return $listar;
@@ -1027,12 +1024,12 @@ class Logistica
     function ListarKardexAlmacen($id_producto, $id_almacen, $inicio, $numero_filas)
     {
         $ocado = new cado();
-        $sql = "SELECT k.fecha,td.descripcion,k.nro_doc,k.id_tipo_operacion,IF(k.tipo_movimiento=1,k.cantidad,'') as cantidad_entrada,
+        $sql = "SELECT k.fecha,IF(td.descripcion!='',td.descripcion,'-'),k.nro_doc,k.id_tipo_operacion,IF(k.tipo_movimiento=1,k.cantidad,'') as cantidad_entrada,
         IF(k.tipo_movimiento=1,cast(precio as decimal(18,2)),'0.00') as precio_entrada, IF(k.tipo_movimiento=1,cast(costo_total as decimal(18,2)),'0.00') as costo_total_entrada, 
         IF(k.tipo_movimiento=2,k.cantidad,'') as cantidad_salida,IF(k.tipo_movimiento=2,cast(precio as decimal(18,2)),'0.00') as precio_salida, 
         IF(k.tipo_movimiento=2,cast(costo_total as decimal(18,2)),'0.00') as costo_total_salida ,k.tipo_movimiento,k.cantidad,k.costo_total 
        FROM log_kardex k
-       INNER JOIN log_tipo_documento td on k.id_tipo_documento=td.id
+       LEFT JOIN log_tipo_documento td on k.id_tipo_documento=td.id
        JOIN log_lote l ON l.id=k.id_lote 
        where k.id_producto=$id_producto and l.id_almacen=$id_almacen  order by k.fecha asc,k.id asc     ";
         $listar = $ocado->ejecutar($sql);
@@ -1209,8 +1206,6 @@ class Logistica
     }
 
     //CONTROL DE REACTIVOS
-
-
 
 
     function RegistrarMaquina($nombre)
