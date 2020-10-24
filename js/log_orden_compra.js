@@ -58,11 +58,11 @@ $(document).ready(function () {
 
 //DEZPLAZAR POR FORMULARIO
 $("#OCid_cmb_suc").change(function () {
-    if ($("#OCid_cmb_suc").val() != "" && $("#OCvalor").val()=='2') {
+    if ($("#OCid_cmb_suc").val() != "" && $("#OCvalor").val() == '2') {
         almacenxsucursal()
-        
+
     }
-    if ($("#OCid_cmb_suc").val() != "" && $("#OCvalor").val()=='1') {
+    if ($("#OCid_cmb_suc").val() != "" && $("#OCvalor").val() == '1') {
         almacenxsucursal()
         setTimeout(function () {
             $("#OCid_cmb_alm").select2('open');
@@ -76,30 +76,30 @@ $("#OCid_cmb_suc").change(function () {
 
 
 $("#OCid_cmb_alm").change(function () {
-    if ($("#OCid_cmb_alm").val() != "" && $("#OCvalor").val()!='2') {
-    $("#OCtipo").select2('open');
+    if ($("#OCid_cmb_alm").val() != "" && $("#OCvalor").val() != '2') {
+        $("#OCtipo").select2('open');
     }
 
 });
 
 $("#OCtipo").change(function (e) {
-    if ($("#OCtipo").val() != "" && $("#OCvalor").val()!='2') {
-    setTimeout(function () {
-        $("#OCcategoria").select2('open');
-        
+    if ($("#OCtipo").val() != "" && $("#OCvalor").val() != '2') {
+        setTimeout(function () {
+            $("#OCcategoria").select2('open');
 
-    }, 100);
+
+        }, 100);
     }
     OCListarProductos()
 
 });
 $("#OCcategoria").change(function (e) {
-    if ($("#OCcategoria").val() != "" && $("#OCvalor").val()!='2') {
-    setTimeout(function () {
-        $("#OCnro").focus();
+    if ($("#OCcategoria").val() != "" && $("#OCvalor").val() != '2') {
+        setTimeout(function () {
+            $("#OCnro").focus();
 
 
-    }, 100);
+        }, 100);
     }
     OCListarProductos()
 
@@ -157,8 +157,6 @@ $(document).keydown(function (e) {
     }
 
 
-
-
 });
 
 
@@ -174,22 +172,24 @@ $("#OCbuscar-id_cmb_suc").change(function () {
 
 //BOTONES
 
-$("input,select").attr("disabled", "true");
+$("#OCnro,#OCid_cmb_alm,#OCid_cmb_suc,#OCreferencia,#OCfecha,#OCtipo,#OCid_cmb_pro,#OCcategoria,#OCcantidad").attr("disabled", true);
+$("#OCbtn_guardar,#OCbtn_imprimir,#OCbtn_limpiar,#OCbtn_anular,#OCbtn_finalizar").attr("disabled", true);
 $("#OCbtn_nuevo").click(function () {
-    $("#OCbtn_guardar,input,select").attr("disabled", false);
-    $("#OCbtn_buscar,#OCusuario").attr("disabled", "true")
+    $("#OCnro,#OCid_cmb_alm,#OCid_cmb_suc,#OCreferencia,#OCfecha,#OCtipo,#OCid_cmb_pro,#OCcategoria,#OCcantidad").attr("disabled", false);
+
+    $("#OCbtn_guardar,#OCbtn_limpiar").attr("disabled", false);
+    $("#OCbtn_buscar,#OCusuario").attr("disabled", true)
 
 
 });
 $("#OCbtn_guardar").click(function () {
     OCguardar();
-    OCcancelar()
+    $("#OCbtn_cancelar").click()
 
 });
 $("#OCbtn_buscar").click(function () {
     OCListarBuscar();
-    $("#OCbtn_nuevo").attr("disabled", "true");
-    $(".input").attr("disabled", false);
+    $("#OCbtn_nuevo").attr("disabled", true);
     $("#OCModal").modal();
 });
 $("#OCbtn_imprimir").click(function () {
@@ -197,12 +197,11 @@ $("#OCbtn_imprimir").click(function () {
 });
 $("#OCbtn_limpiar").click(function () {
     OCcancelar()
-
 });
 $("#OCbtn_cancelar").click(function () {
     OCcancelar()
     $("#OCbtn_nuevo,#OCbtn_buscar").attr("disabled", false);
-    $("#OCbtn_guardar,#OCbtn_imprimir,#OCbtn_limpiar,#OCbtn_finalizar,#OCbtn_anular").attr("disabled", "true");
+    $("#OCbtn_guardar,#OCbtn_imprimir,#OCbtn_limpiar,#OCbtn_finalizar,#OCbtn_anular").attr("disabled", true);
 
 });
 $("#OCbtn_anular").click(function () {
@@ -224,7 +223,6 @@ $("#OCbtn_anular").click(function () {
             swal("Error", "No se pudo anular la orden", "error");
         }
     });
-
 
 
 });
@@ -266,7 +264,6 @@ function OClistar() {
 }
 
 function OCAñadirDetalle() {
-
 
     if ($("#OCid_cmb_pro").val() == "") {
         swal("Campo requerido", "Seleccione un producto", "warning");
@@ -327,7 +324,7 @@ function OCAñadirDetalle() {
     $("#OCcantidad").val("");
     $("#OCunidad").val("");
     setTimeout(function () {
-        $("#OCid_cmb_pro").val("").trigger('chosen:updated');
+        $("#OCid_cmb_pro").val("").change();
 
         $("#OCid_cmb_pro").trigger('select:open');
     }, 300);
@@ -472,12 +469,14 @@ function OCcancelar() {
     $("#OCfecha").val("");
 
     $("#OCtipo").val("").change();
+    $("#OCid_cmb_pro").val("").change();
+    $("#OCcategoria").val("").change();
 
     $("#OCcantidad").val("");
     $("#OCunidad").val("");
     $("#OCvalor").val("1")
     setTimeout(function () {
-        $("input,select").attr("disabled", "true");
+        $("#OCnro,#OCid_cmb_alm,#OCid_cmb_suc,#OCreferencia,#OCfecha,#OCtipo,#OCid_cmb_pro,#OCcategoria,#OCcantidad").attr("disabled", true);
 
     }, 100);
 
@@ -549,8 +548,8 @@ function almacenxsucursal2() {
 }
 
 function OCLlenarDatos() {
-    $("#OCbtn_guardar,input,select").attr("disabled", false);
-    $("#OCbtn_buscar,#OCusuario").attr("disabled", "true")
+    $("#OCbtn_guardar").attr("disabled", false);
+    $("#OCbtn_buscar,#OCusuario").attr("disabled", true)
 
     $("#OCvalor").val(2);
     var $ident = $("#IdFilaOC").val();
@@ -611,6 +610,8 @@ function OCLlenarDatos() {
 
 
             OClistar();
+            $("#OCbtn_guardar,#OCbtn_imprimir,#OCbtn_anular,#OCbtn_finalizar").attr("disabled", false);
+
 
         }, 'JSON');
 
