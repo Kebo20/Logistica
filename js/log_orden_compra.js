@@ -86,21 +86,23 @@ $("#OCtipo").change(function (e) {
     if ($("#OCtipo").val() != "" && $("#OCvalor").val()!='2') {
     setTimeout(function () {
         $("#OCcategoria").select2('open');
-        OCListarProductos()
+        
 
     }, 100);
     }
+    OCListarProductos()
 
 });
 $("#OCcategoria").change(function (e) {
     if ($("#OCcategoria").val() != "" && $("#OCvalor").val()!='2') {
     setTimeout(function () {
         $("#OCnro").focus();
-        OCListarProductos()
 
 
     }, 100);
     }
+    OCListarProductos()
+
 
 });
 $("#OCnro").keypress(function (e) {
@@ -260,7 +262,6 @@ function OClistar() {
 <td style='text-align:left;'>" + orden_compra[i].nombre_producto + "</td>\n\
 <td style='text-align:left;'> " + orden_compra[i].cantidad + "</td>\n\
 <td> " + orden_compra[i].unidad + "</td><td> " + orden_compra[i].despachado + "</td><td> " + orden_compra[i].pendiente + "</td>");
-        console.log(orden_compra[i]);
     }
 }
 
@@ -349,11 +350,13 @@ function LlenarStockUnidad() {
         $("#OCunidad").val(data.unidad)
     }, 'JSON');
 
+    $("#OCstock").val("0")
 
-    $.post("controlador/Clogistica.php?op=LLENAR_PRO", {
+    $.post("controlador/Clogistica.php?op=STOCK_PRO", {
         id: $("#OCid_cmb_pro").val()
     }, function (data) {
-        $("#OCstock").val(data.stock)
+
+        $("#OCstock").val(data)
     }, 'JSON');
 }
 
@@ -382,7 +385,6 @@ function almacenxsucursal() {
     }, function (data) {
 
         $("#OCid_cmb_alm").html(data);
-        console.log(data);
 
     });
 }
@@ -453,7 +455,6 @@ function OCguardar() {
         $("#OCbtn_nuevo").removeAttr("disabled");
         $("#OCbtn_limpiar").removeAttr("disabled");
         $("#OCvalor").val("1")
-        console.log(data);
     });
     OCcancelar()
     $("#OCbtn_buscar").attr("disabled", false);
@@ -544,7 +545,6 @@ function almacenxsucursal2() {
     }, function (data) {
 
         $("#OCbuscar-id_cmb_alm").html(data);
-        // console.log(data);
 
     });
 }
@@ -564,7 +564,6 @@ function OCLlenarDatos() {
 
         id: $id
     }, function (data) {
-        //console.log(data);
         /*$.blockUI({
             css: {
                 backgroundColor: 'white',
@@ -596,7 +595,6 @@ function OCLlenarDatos() {
 
             id: data.id
         }, function (detalles) {
-            //console.log(detalles)
             orden_compra = new Array();
 
             for (var i = 0; i < detalles.length; i++) {
@@ -615,7 +613,6 @@ function OCLlenarDatos() {
 
             OClistar();
 
-            //console.log(orden_compra);
         }, 'JSON');
 
     }, 'JSON');

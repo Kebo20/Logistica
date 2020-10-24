@@ -929,13 +929,14 @@ class Logistica
         return $ejecutar;
     }
 
-    function StockxProductoAlmacen($id_producto)
+    function StockxProducto($id_producto)
     {
         $ocado = new cado();
-        $sql = "SELECT SUM(cantidad) FROM `log_lote` WHERE id_producto=$id_producto ";
+        $sql = "SELECT SUM(cantidad) as stock FROM `log_lote` WHERE id_producto=$id_producto ";
         $ejecutar = $ocado->ejecutar($sql);
         return $ejecutar;
     }
+
 
     function ListarLoteFraccionxAlmacen($almacen)
     {

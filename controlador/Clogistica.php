@@ -14,7 +14,7 @@ switch ($_GET["op"]) {
         echo $olog->IGV;
         break;
     case "I":
-        echo round(9.74,1, PHP_ROUND_HALF_UP);
+        echo round(9.74, 1, PHP_ROUND_HALF_UP);
         break;
 
         //ALMACEN
@@ -605,7 +605,12 @@ switch ($_GET["op"]) {
         echo $actualizar;
         break;
 
-
+    case 'STOCK_PRO':
+        $id_producto = $_POST['id'];
+       
+        $stock = $olog->StockxProducto($id_producto)->fetch()['stock'];
+        echo $stock;
+        break;
 
 
 
@@ -682,14 +687,14 @@ switch ($_GET["op"]) {
             $subArray[] = $prov[8];
             $subArray[] = $prov[12];
             $subArray[] = $prov[14];
-           
-            
+
+
 
 
             $subArray[] = "<div align='center'>
                 <a  onclick=\"detalles('" . $prov["id"] . "')\" ><i class=' fa fa-search-plus' ></i> </a>";
 
-                $subArray[] = $prov[15];
+            $subArray[] = $prov[15];
             $datos[] = $subArray;
         }
 

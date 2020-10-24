@@ -112,7 +112,7 @@ function MostrarStockUnidad() {
 
 
 
-            $("#TAfraccion_equi").val(cantidad_fraccion + " " + data.unidad + " " + data.nombre);
+            $("#TAfraccion_equi").val(cantidad_fraccion + "  " + data.unidad + " de " + data.nombre);
 
             $("#TAunidad_fraccion").val(data.unidad);
 

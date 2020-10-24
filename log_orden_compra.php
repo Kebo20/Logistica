@@ -128,7 +128,7 @@ $lista_categorias = $olog->ListarCategoriaProducto('', 0, 1000);
                 <input type="text" id="OCunidad" readonly value="" style="width:95%" class='input' autocomplete="off">
             </td>
             <td width="10%"><b>Stock</b><br>
-                <input type="text" readonly value="" style="text-transform:uppercase;width:95%" class='input' autocomplete="off">
+                <input type="text" id="OCstock" readonly value="" style="text-transform:uppercase;width:95%" class='input' autocomplete="off">
             </td>
 
 
