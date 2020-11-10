@@ -1040,7 +1040,7 @@ switch ($_GET["op"]) {
         $unidad_origen = $producto['unidad'];
         $producto_fraccion = $olog->ListarProductoLogxId($producto['id_producto_fraccion'])->fetch();
 
-        $unidad_destino = $producto_fraccion['id_unidad'];
+        $unidad_destino = $producto_fraccion['unidad'];
         $cantidad_destino = $producto['cantidad_fraccion'] * $cantidad_origen;
 
         $insertar = $olog->FraccionarLote($almacen, $cantidad_origen, $cantidad_destino, $unidad_origen, $unidad_destino, $id_producto_origen, $id_producto_destino, $id_lote);

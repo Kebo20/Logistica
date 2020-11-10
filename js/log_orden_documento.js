@@ -60,7 +60,7 @@ function Listar(pagina) {
                     }
 
                     $("#pagina" + pagina).removeAttr("class");
-                    $("#pagina" + pagina).attr("class", "btn btn-dark");
+                    $("#pagina" + pagina).attr("class", "btn btn-xs btn-info");
                 },
 
                 error: function (e) {

@@ -533,6 +533,9 @@ function OCListarBuscar() {
         function (data) {
             $("#IdCuerpoOCbuscar").html(data);
             $("#IdFilaOC").val(0);
+
+            $("#OCnro,#OCid_cmb_alm,#OCid_cmb_suc,#OCreferencia,#OCfecha,#OCtipo,#OCid_cmb_pro,#OCcategoria,#OCcantidad").attr("disabled", false);
+
         });
 }
 

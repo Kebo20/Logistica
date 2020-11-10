@@ -95,7 +95,7 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
 <table width='100%' style="font-size:12px; font-weight:bold;">
     <tr>
 
-        <td width="15%"><b>Tipo de doc.</b>
+        <td width="15%"><b>Tipo de documento</b>
             <select id="tipo_documento" class="input " onchange="ChangeTipoDoc()" style="width:95%">
                 <option value="">Seleccione</option>
                 <option value="2">FA</option>
@@ -106,7 +106,7 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
             </select></td>
         <td width="15%"><b>Serie</b>
             <input type="text" id="serie" style="text-transform:uppercase;width:95%" class="input " value="" autocomplete="off"></td>
-        <td width="15%"><b>N° de doc.</b>
+        <td width="15%"><b>N° de documento (correlativo)</b>
             <input type="text" id="nro_documento" style="text-transform:uppercase;width:95%" class="input numero" value="" autocomplete="off"></td>
         <td width="15%"><b>Fecha</b><input type="date" onchange="ChangeFecha()" id="fecha" class='form-control' value="" style="width:95%" autocomplete="off"></td>
 
