@@ -259,11 +259,13 @@ switch ($_GET["op"]) {
         //PRODUCTO
     case "LIS_PRO":
         $datos = array();
-        $pagina = $_GET["pagina"];
-        $ultimo_pagina = $pagina * $paginacion;
-        $primero_pagina = $ultimo_pagina - $paginacion;
-        $lista = $olog->ListarProductoLog($_GET["q"], $primero_pagina, $paginacion);
-        $cont = $primero_pagina;
+        
+        if($_GET["q"]!='' || $_GET["id_categoria"]!='' ){
+            $paginacion=1000000;
+        }
+  
+        $lista = $olog->ListarProductoLog($_GET["q"],$_GET["id_categoria"], 0, $paginacion);
+        $cont = 0;
         foreach ($lista as $alm) {
             $cont++;
             $subArray = array();
@@ -300,21 +302,6 @@ switch ($_GET["op"]) {
 
 
 
-    case "PAG_PRO":
-
-        $cont = $olog->TotalProducto($_GET["q"])->fetch()[0];
-
-        if ($cont == 0) {
-            echo 0;
-            break;
-        }
-
-        if ($cont < $paginacion) {
-            echo "1";
-        } else {
-            echo ceil($cont / $paginacion);
-        }
-        break;
 
     case "LISTAR_PRO_OC":
         $lista = $olog->ListarProductoTipo($_POST['tipo'], $_POST['categoria']);
@@ -432,6 +419,11 @@ switch ($_GET["op"]) {
 
 
         //Orden de Compra
+
+        case 'NRO_ORD_COM':
+            echo $olog->NroOrdCompra();
+
+        break;
 
     case "NUEVO_ORD_COM":
 
@@ -632,6 +624,7 @@ switch ($_GET["op"]) {
         $id_orden = $_POST['id_orden'];
         $id_almacen = $_POST['id_almacen'];
         $igv_detalle = $_POST['igv_detalle'];
+        $redondeo = $_POST['redondeo'];
         $insertar = $olog->RegistrarCompra(
             $detalles_compra,
             $fecha,
@@ -645,21 +638,40 @@ switch ($_GET["op"]) {
             $nro_dias,
             $id_orden,
             $id_almacen,
-            $igv_detalle
+            $igv_detalle,
+            $redondeo
         );
 
         echo $insertar;
         break;
 
 
+        case "TOTAL_COM":
+
+            $detalles_compra = json_decode($_POST["compra"],true);
+            $igv_detalle = $_POST['igv_detalle'];
+            $tipo_afectacion=$_POST['tipo_afectacion'];
+            $redondeo = $_POST['redondeo'];
+           
+
+            $totales=$olog->TotalySubtotalCompra( $detalles_compra,
+            $tipo_afectacion,
+            $igv_detalle,
+            $redondeo);
+      
+
+
+            echo json_encode($totales);
+            break;
+    
+    
+
     case "LIS_COM":
 
         $datos = array();
-        $pagina = $_GET["pagina"];
-        $ultimo_pagina = $pagina * $paginacion;
-        $primero_pagina = $ultimo_pagina - $paginacion;
-        $lista = $olog->ListarCompra($_GET["q"], $primero_pagina, $paginacion);
-        $cont = $primero_pagina;
+        
+        $lista = $olog->ListarCompra($_GET["q"],$_GET['fecha_inicio'],$_GET['fecha_fin'], 0, 200);
+        $cont = 0;
         foreach ($lista as $prov) {
 
             if ($prov[10] == "0") {
@@ -687,8 +699,6 @@ switch ($_GET["op"]) {
             $subArray[] = $prov[8];
             $subArray[] = $prov[12];
             $subArray[] = $prov[14];
-
-
 
 
             $subArray[] = "<div align='center'>
@@ -744,7 +754,7 @@ switch ($_GET["op"]) {
                 . "<td >$c[0]</td>"
                 . "<td align='center' >$bonificacion</td>"
                 . "<td align='center'>$c[5] </td>"
-                . "<td class='text-right'>$c[13]  </td>"
+                . "<td class='text-right'>".$c['nro']." </td>"
                 . "<td class='text-right'>$c[7]  </td>"
                 . "<td class='text-right'>S/." . $c['precio'] . "  </td>"
                 . "<td class='text-right'>S/." . $c[8] . "  </td>"
@@ -855,11 +865,9 @@ switch ($_GET["op"]) {
 
     case 'LIS_LOTE':
         $datos = array();
-        $pagina = $_GET["pagina"];
-        $ultimo_pagina = $pagina * $paginacion;
-        $primero_pagina = $ultimo_pagina - $paginacion;
-        $lista = $olog->ListarLote($_GET["q"], $primero_pagina, $paginacion);
-        $cont = $primero_pagina;
+        
+        $lista = $olog->ListarLote($_GET["q"],$_GET["id_almacen"], 0, 1000);
+        $cont = 0;
         foreach ($lista as $prov) {
             $cont++;
             $subArray = array();
@@ -869,7 +877,6 @@ switch ($_GET["op"]) {
             $subArray[] = $prov["cantidad"];
             $subArray[] = $prov["unidad"];
             $subArray[] = $prov["fecha_vencimiento"];
-            $subArray[] = $prov["almacen"] . ' - ' . $prov["sucursal"];
 
 
             $datos[] = $subArray;
@@ -880,21 +887,7 @@ switch ($_GET["op"]) {
 
 
 
-    case "PAG_LOTE":
-
-        $cont = $olog->TotalLote($_GET["q"])->fetch()[0];
-
-        if ($cont == 0) {
-            echo 0;
-            break;
-        }
-
-        if ($cont < $paginacion) {
-            echo "1";
-        } else {
-            echo ceil($cont / $paginacion);
-        }
-        break;
+ 
 
 
     case 'LISTAR_LOTExALM':
@@ -1621,4 +1614,56 @@ switch ($_GET["op"]) {
 
         echo json_encode($datos);
         break;
+
+
+        
+
+        case "TRANSFERIR_AREA":
+            if ($_POST['cantidad'] < 1) {
+                echo 0;
+                break;
+            }
+    
+            $almacen_origen = $_POST['almacen_origen'];
+            $area = $_POST['area'];
+            $id_lote = $_POST['lote'];
+            $cantidad = $_POST['cantidad'];
+          
+    
+    
+            $insertar = $olog->TransferenciaArea($almacen_origen, $area, $cantidad, $id_lote);
+            echo $insertar;
+    
+            break;
+
+
+
+
+            case 'LIS_TRANS_AREA':
+                $datos = array();
+                
+                $nombre_producto = $_GET['nombre_producto'];
+                $id_area = $_GET['id_area'];
+        
+                $lista = $olog->ListarTrasferirArea($id_area,$nombre_producto);
+                $cont = 0;
+                foreach ($lista as $ingreso) {
+                    $cont++;
+                    $subArray = array();
+                    $subArray[] = $cont;
+                    $subArray[] = $ingreso['fecha'];
+                    $subArray[] = $ingreso['lote'];
+                    $subArray[] = $ingreso['producto'];
+                    $subArray[] = $ingreso['unidad'];
+                    $subArray[] = $ingreso['cantidad'];
+                    $subArray[] = $ingreso['almacen'];
+
+
+
+                    $datos[] = $subArray;
+                }
+        
+                echo json_encode($datos);
+                break;
+        
 }

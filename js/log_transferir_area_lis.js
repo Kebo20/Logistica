@@ -1,36 +1,17 @@
-Listar(1);
-var $sucursal = $("#id_cmb_suc").select2({
-    dropdownAutoWidth: true,
-    width: '97%'
-});
-var $almacen = $("#id_cmb_alm").select2({
+Listar();
+
+var $area = $("#id_cmb_area").select2({
     dropdownAutoWidth: true,
     width: '97%'
 });
 
-$("#id_cmb_suc").change(function () {
+$("#id_cmb_area").change(function () {
    
     
-        almacenxsucursal()
-        setTimeout(function () {
-            $("#id_cmb_alm").select2('open');
-
-        }, 200);
+       Listar()
 
 });
 
-
-function almacenxsucursal() {
-    $("#id_cmb_alm").val("").change();
-    $.post("controlador/Clogistica.php?op=LISTAR_ALM_GRALxSUC", {
-        sucursal: $("#id_cmb_suc").val(),
-
-    }, function (data) {
-
-        $("#id_cmb_alm").html(data);
-
-    });
-}
 
 
 function Listar() {
@@ -40,7 +21,7 @@ function Listar() {
 
     $.ajax({
 
-        url: 'controlador/Clogistica.php?op=LIS_LOTE&q=' + $("#buscar").val() + "&id_almacen=" + $("#id_cmb_alm").val(),
+        url: 'controlador/Clogistica.php?op=LIS_TRANS_AREA&nombre_producto=' + $("#buscar").val() + "&id_area=" + $("#id_cmb_area").val(),
         type: "POST",
         dataType: "json",
 
@@ -53,11 +34,12 @@ function Listar() {
 
                 $("#lista").append("<tr>"
                 +"<td width='5%'>" + val[0] + "</td>"
-                +"<td width='15%' align='right'>" + val[1] + "</td>"
-                +"<td width='25%'>" + val[2] + "</td>"
-                +"<td width='5%' align='right'>" + val[3] + "</td>"
+                +"<td width='10%' align='right'>" + val[1] + "</td>"
+                +"<td width='10%'>" + val[2] + "</td>"
+                +"<td width='35%' >" + val[3] + "</td>"
                 +"<td width='10%' >" + val[4] + "</td>"
                 +"<td width='10%'>"+val[5]+"</td>"
+                +"<td width='20%'>"+val[6]+"</td>"
              
 
                 +"</tr>");

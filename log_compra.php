@@ -11,6 +11,8 @@ require_once('cado/ClaseLogistica.php');
 $olog = new Logistica();
 $lista_categorias = $olog->ListarCategoriaProducto("", 0, 1000);
 
+$fecha= date('Y-m-d');
+
 ?>
 
 <input type="hidden" id="IdFilaUsu" />
@@ -54,8 +56,16 @@ $lista_categorias = $olog->ListarCategoriaProducto("", 0, 1000);
 <div class="page-header" style="background-color:#EFF3F8;padding-left:10px; padding-top:15px">
     <table width="100%">
         <tr>
-            <td width="40%"><span class="input-icon" style="width:90%">
+            <td width="40%"><b>N° documento <br><span class="input-icon" style="width:90%">
                     <input type="text" id="buscar" placeholder=" Buscar " class="form-control" onkeyup="javascript:Listar(1)" autocomplete="off" />
+                    <i class="ace-icon fa fa-search nav-search-icon"></i>
+                </span></td>
+            <td width="30%"><b>Fecha inicio <br><span class="input-icon" style="width:90%">
+                    <input type="date" id="fecha_inicio"  class="form-control" onchange="javascript:Listar(1)" value="" autocomplete="off" />
+                    <i class="ace-icon fa fa-search nav-search-icon"></i>
+                </span></td>
+            <td width="30%"><b>Fecha fin <br><span class="input-icon" style="width:90%">
+                    <input type="date" id="fecha_fin"  class="form-control" onchange="javascript:Listar(1)" value="<?=$fecha?>" autocomplete="off" />
                     <i class="ace-icon fa fa-search nav-search-icon"></i>
                 </span></td>
 
@@ -65,53 +75,53 @@ $lista_categorias = $olog->ListarCategoriaProducto("", 0, 1000);
 
 
 <!--Modal Registrar -->
-<div id="ModalRegistrar" class="modal fade text-left scrollable"  role="dialog">
+<div id="ModalRegistrar" class="modal fade text-left scrollable" role="dialog">
 
-        <form id="formRegistrar">
-            <div class="modal-dialog " style="width: 85%;">
-                <div class="modal-content">
-                    <div class="modal-header ">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title" style="color:#030"> <img src="imagenes/grupo_user.png" height="30" width="30" />
-                            &nbsp; DETALLES DE COMPRA</h4>
-
-
-                    </div>
-                    <div id='' class="modal-body " style="overflow-y: scroll;height: 500px;">
-
-                        <table class="table table-responsive table-bordered table-striped text-left  ">
-                            <thead class='bg-secondary text-white'>
-                                <th>N°</th>
-                                <th>N° orden</th>
-                                <th>Producto</th>
-                                <th>Bon.</th>
-                                <th>Venci.</th>
-                                <th>Lote</th>
-                                <th>Cant.</th>
-                                <th>Precio</th>
-                                <th>Precio sin igv</th>
-                                <th>Monto IGV</th>
-                                <th>Subtotal</th>
-                                <th>Prec. ant.</th>
-                            </thead>
+    <form id="formRegistrar">
+        <div class="modal-dialog " style="width: 85%;">
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color:#030"> <img src="imagenes/grupo_user.png" height="30" width="30" />
+                        &nbsp; DETALLES DE COMPRA</h4>
 
 
-                            <tbody id="detalles" >
+                </div>
+                <div id='' class="modal-body " style="overflow-y: scroll;height: 500px;">
 
-                            </tbody>
+                    <table class="table table-responsive table-bordered table-striped text-left  ">
+                        <thead class='bg-secondary text-white'>
+                            <th>N°</th>
+                            <th>N° orden</th>
+                            <th>Producto</th>
+                            <th>Bon.</th>
+                            <th>Venci.</th>
+                            <th>Lote</th>
+                            <th>Cant.</th>
+                            <th>Precio</th>
+                            <th>Precio sin igv</th>
+                            <th>Monto IGV</th>
+                            <th>Subtotal</th>
+                            <th>Prec. ant.</th>
+                        </thead>
 
-                        </table>
 
-                    </div>
-                    <div class="modal-footer">
+                        <tbody id="detalles">
 
-                        <button class="btn btn-white btn-info btn-bold " type="reset" data-dismiss="modal">
-                            <i class="ace-icon fa fa-times red2"></i>Cancelar</button>
-                    </div>
+                        </tbody>
+
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+
+                    <button class="btn btn-white btn-info btn-bold " type="reset" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times red2"></i>Cancelar</button>
                 </div>
             </div>
-        </form>
-    
+        </div>
+    </form>
+
 </div>
 
 <script src='js/log_compra.js'></script>

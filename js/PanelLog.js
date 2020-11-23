@@ -45,6 +45,8 @@ function CategoriasProducto() { $.post('log_categoria_producto.php', {}, functio
 function Proveedores() { $.post('log_proveedor.php', {}, function (datitos) { $("#IdCuerpo").html(datitos); }) }
 function Almacenes() { $.post('log_almacen.php', {}, function (datitos) { $("#IdCuerpo").html(datitos); }) }
 function TransferirAlmacen() { $.post('log_transferir_almacen.php', {}, function (datitos) { $("#IdCuerpo").html(datitos); }) }
+function TransferirArea() { $.post('log_transferir_area.php', {}, function (datitos) { $("#IdCuerpo").html(datitos); }) }
+function ListarTransferirArea(){ $.post('log_transferir_area_lis.php', {}, function (datitos) { $("#IdCuerpo").html(datitos); }) }
 function Lotes() { $.post('log_lote.php', {}, function (datitos) { $("#IdCuerpo").html(datitos); }) }
 
 function FraccionarLote() { $.post('log_fraccionar_lote.php', {}, function (datitos) { $("#IdCuerpo").html(datitos); }) }

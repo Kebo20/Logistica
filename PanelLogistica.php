@@ -260,7 +260,23 @@ date_default_timezone_set('America/Lima');
 						<li class="hover" id="" onClick="Activar('9');TransferirAlmacen()">
 							<a href="#">
 								<i style="margin:0; padding:0" class="menu-icon fa fa-caret-right"></i>
-								<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">TRANSFERIR </span>
+								<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">TRANSFERIR ALMACEN </span>
+							</a>
+
+							<b class="arrow"></b>
+						</li>
+						<li class="hover" id="" onClick="Activar('9');TransferirArea()">
+							<a href="#">
+								<i style="margin:0; padding:0" class="menu-icon fa fa-caret-right"></i>
+								<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">DESPACHAR ÁREA </span>
+							</a>
+
+							<b class="arrow"></b>
+						</li>
+						<li class="hover" id="" onClick="Activar('9');ListarTransferirArea()">
+							<a href="#">
+								<i style="margin:0; padding:0" class="menu-icon fa fa-caret-right"></i>
+								<span class="menu-text" style="font-size:10px; margin:0; padding:0; font-weight:bold">LISTAR TRANSFERENCIAS A ÁREA </span>
 							</a>
 
 							<b class="arrow"></b>

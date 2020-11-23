@@ -10,7 +10,7 @@ require_once('cado/ClaseLogistica.php');
 
 
 $olog = new Logistica();
-$lista_productos = $olog->ListarProductoLog("", 0, 1000);
+$lista_productos = $olog->ListarProductoLog("","", 0, 1000);
 $lista_proveedores = $olog->ListarProveedor("", 0, 1000);
 
 require_once('cado/ClaseContabilidad.php');
@@ -38,9 +38,11 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
         <td width="15%">
             <label for="afecto"><b>Afecto</b></label>
 
-            <input type="radio" id="afecto" name="tipo_afectacion" onclick="ClickAfecto()" class="input-radio formulario" value="1" onchange="llenarIGV()">
+            <input type="radio" id="afecto" name="tipo_afectacion" onclick="ClickAfecto()"
+                class="input-radio formulario" value="1" onchange="llenarIGV()">
             <label for="inafecto"><b>Inafecto</b></label>
-            <input type="radio" id="inafecto" onclick="ClickInafecto()" name="tipo_afectacion" class="input-radio formulario" value="2" onchange="llenarIGV()">
+            <input type="radio" id="inafecto" onclick="ClickInafecto()" name="tipo_afectacion"
+                class="input-radio formulario" value="2" onchange="llenarIGV()">
         </td>
 
         <td width="60%"><b>Proveedor</b>
@@ -49,7 +51,7 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
             <select id="id_cmb_prov" class="input " onchange="ChangeProv()" style="width:95%">
                 <option value="">Seleccione</option>
                 <?php foreach ($lista_proveedores as $p) { ?>
-                    <option value="<?= $p[0] ?>"><?= $p[1] ?></option>
+                <option value="<?= $p[0] ?>"><?= $p[1] ?></option>
                 <?php } ?>
 
             </select>
@@ -57,7 +59,8 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
 
         <td width="25%">
             <br>
-            <button type="button" id="" style="width:85%" class="btn btn-white btn-info btn-bold" onClick="AbrirModalOrdenCompra()"><i class='fa fa-plus-circle'></i> Orden de compra</button>
+            <button type="button" id="" style="width:85%" class="btn btn-white btn-info btn-bold"
+                onClick="AbrirModalOrdenCompra()"><i class='fa fa-plus-circle'></i> Orden de compra</button>
         <td>
 
 
@@ -74,7 +77,7 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
             <select id="id_cmb_suc" class='form-control' onchange="ChangeSucursal()" style="width:90%">
                 <option value="">Seleccione</option>
                 <?php foreach ($lista_sucursales as $s) { ?>
-                    <option value="<?= $s[0] ?>"><?= $s[1] ?> - <?= $s["nombre_empresa"] ?></option>
+                <option value="<?= $s[0] ?>"><?= $s[1] ?> - <?= $s["nombre_empresa"] ?></option>
                 <?php } ?>
 
             </select>
@@ -103,12 +106,18 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
 
                 <option value="3">RH</option>
                 <option value="10">GR</option>
-            </select></td>
+            </select>
+        </td>
         <td width="15%"><b>Serie</b>
-            <input type="text" id="serie" style="text-transform:uppercase;width:95%" class="input " value="" autocomplete="off"></td>
+            <input type="text" id="serie" style="text-transform:uppercase;width:95%" class="input " value=""
+                autocomplete="off">
+        </td>
         <td width="15%"><b>N° de documento (correlativo)</b>
-            <input type="text" id="nro_documento" style="text-transform:uppercase;width:95%" class="input numero" value="" autocomplete="off"></td>
-        <td width="15%"><b>Fecha</b><input type="date" onchange="ChangeFecha()" id="fecha" class='form-control' value="" style="width:95%" autocomplete="off"></td>
+            <input type="text" id="nro_documento" style="text-transform:uppercase;width:95%" class="input numero"
+                value="" autocomplete="off">
+        </td>
+        <td width="15%"><b>Fecha</b><input type="date" onchange="ChangeFecha()" id="fecha" class='form-control' value=""
+                style="width:95%" autocomplete="off"></td>
 
         <td width="15%"><b>Tipo de compra</b>
             <select id="tipo_compra" class="input " onchange="ChangeTipoCompra()" style="width:95%">
@@ -116,9 +125,12 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
                 <option value="Contado">Contado</option>
                 <option value="Crédito">Crédito</option>
 
-            </select></td>
+            </select>
+        </td>
         <td width="13%" id='td-nro_dias'><b>N° de dias</b>
-            <input type="number" id="nro_dias" value="0" style="text-transform:uppercase;width:95%" class="input numero" value="" autocomplete="off"></td>
+            <input type="number" id="nro_dias" value="0" style="text-transform:uppercase;width:95%" class="input numero"
+                value="" autocomplete="off">
+        </td>
         <td width="27%" align="center">
             <b>Factura afecta a IGV</b>
 
@@ -140,7 +152,9 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
             <select id="id_cmb_pro" class="input " onchange="ChangeProducto()" style="width: 95%">
                 <option value="">Seleccione producto</option>
                 <?php foreach ($lista_productos as $p) { ?>
-                    <option id='<?= "pro_" . $p[0] ?>' tipo_producto='<?= $p["tipo_producto"] ?>' nombre_producto='<?= $p["nombre"] ?>' value="<?= $p[0] ?>"><?= $p["nombre"] . " - " . $p["categoria"] ?> - <?= $p["tipo"] ?> </option>
+                <option id='<?= "pro_" . $p[0] ?>' tipo_producto='<?= $p["tipo_producto"] ?>'
+                    nombre_producto='<?= $p["nombre"] ?>' value="<?= $p[0] ?>">
+                    <?= $p["nombre"] . " - " . $p["categoria"] ?> - <?= $p["tipo"] ?> </option>
                 <?php } ?>
             </select>
         </td>
@@ -155,17 +169,24 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
     <tr>
 
         <td width="15%"><b>Precio (S/.)</b>
-            <input type="text" id="precio" style="width:95%" class="input numero" value="" autocomplete="off"></td>
+            <input type="text" id="precio" style="width:95%" class="input numero" value="" autocomplete="off">
+        </td>
 
         <td width="10%"><b>Cantidad</b>
-            <input type="number" id="cantidad" style="width:95%" class="input numero" value="" autocomplete="off"></td>
+            <input type="number" id="cantidad" style="width:95%" class="input numero" value="" autocomplete="off">
+        </td>
         <td width="15%"><b>Prec. anterior(S/.)</b>
-            <input type="text" id="precio_anterior" disabled="" value="0.00" style="width:95%" class="input numero" autocomplete="off"></td>
+            <input type="text" id="precio_anterior" disabled="" value="0.00" style="width:95%" class="input numero"
+                autocomplete="off">
+        </td>
         <td width="15%"><b>Vencimiento</b>
-            <input type="date" id="fecha_vencimiento" onchange="ChangeFechaVenc()" style="width:95%" class='form-control' value="" autocomplete="off"></td>
+            <input type="date" id="fecha_vencimiento" onchange="ChangeFechaVenc()" style="width:95%"
+                class='form-control' value="" autocomplete="off">
+        </td>
 
         <td width="15%"><b>N° lote</b>
-            <input type="text" id="nro_lote" style="width:95%" class="input numero" autocomplete="off"></td>
+            <input type="text" id="nro_lote" style="width:95%" class="input numero" autocomplete="off">
+        </td>
         <td width="15%"><b>Bonificación</b>
             <select id='bonificacion' class=" input" onclick="ChangeBonificacion" onchange="ChangeBonificacion()">
                 <option value="">Seleccione</option>
@@ -176,7 +197,8 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
         <td width="2%"></td>
         <td width="10%">
             <br>
-            <button type="button" id="BtnGrabarSerie" style="width:95%" class="btn btn-white btn-info btn-bold" onClick="AñadirDetalle()"><i class='fa fa-plus'></i></button>
+            <button type="button" id="BtnGrabarSerie" style="width:95%" class="btn btn-white btn-info btn-bold"
+                onClick="AñadirDetalle()"><i class='fa fa-plus'></i></button>
         <td>
     </tr>
 
@@ -230,29 +252,70 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
         <table width="100%" style="font-size:12px; font-weight:bold;">
 
             <tr>
-                <td><b>OP. GRAVADA(S/.)</b></td><td><input id="monto_sin_igv" disabled="" style="font-size:12px; text-align:right;width:95%" class='form-control' autocomplete="off"></td>
+                <td><b>OP. GRAVADA(S/.)</b></td>
+                <td><input id="monto_sin_igv" disabled="" style="font-size:12px; text-align:right;width:95%"
+                        class='form-control' autocomplete="off"></td>
             </tr>
             <tr>
-                <td><b>INAFECTA(S/.)</b></td><td><input value="0.00" id="inafecta" disabled="" style="font-size:12px; text-align:right;width:95%" class='form-control' autocomplete="off"></td>
+                <td><b>INAFECTA(S/.)</b></td>
+                <td><input value="0.00" id="inafecta" disabled="" style="font-size:12px; text-align:right;width:95%"
+                        class='form-control' autocomplete="off"></td>
             </tr>
             <tr>
-                <td colspan=""><b>IGV(S/.)</b></td><td><input disabled="" id="monto_igv_total" style="font-size:12px;text-align:right;  width:95%" class='form-control' autocomplete="off"></td>
+                <td colspan=""><b>IGV(S/.)</b></td>
+                <td><input disabled="" id="monto_igv_total" style="font-size:12px;text-align:right;  width:95%"
+                        class='form-control' autocomplete="off"></td>
 
             </tr>
-           <!-- <tr>
+            <!-- <tr>
                 <td colspan=""><b>IGV(%)</b></td><td><input disabled="" id="igv" style="font-size:12px;text-align:right;  width:95%" class='form-control' autocomplete="off"></td>
             </tr>-->
             <tr>
-                <td colspan=""><b>TOTAL(S/.)</b></td><td><input disabled="" id="total" style="background-color:#5CB3ED !important;color:white !important;font-size:12px;text-align:right;width:95%" class='form-control' autocomplete="off"></td>
+                <td colspan=""><b>TOTAL(S/.)</b></td>
+                <td><input disabled="" id="total"
+                        style="background-color:#5CB3ED !important;color:white !important;font-size:12px;text-align:right;width:95%"
+                        class='form-control' autocomplete="off"></td>
+            </tr>
+            <tr>
+                <td><span> &ensp;&ensp;</span></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span><b>REDONDEO</b></span>
+                </td>
+                <td>
+                   <!-- <label for="sin_redondeo"><b><i class="fa fa-ban"></i></b></label>
+
+                    <input type="radio" id="sin_redondeo" name="redondeo" onclick="redondeo()"
+                        class="input-radio formulario" value="0">
+                    <span> &ensp;&ensp;</span>
+                    <label for="redondeo_arriba"><b><i class="fa fa-toggle-up"></i></b></label>
+
+                    <input type="radio" id="redondeo_arriba" name="redondeo" onclick="redondeo()"
+                        class="input-radio formulario" value="1">
+                    <span> &ensp; &ensp;</span>
+                    <label for="redondeo_abajo"><b><i class="fa fa-toggle-down"></i></b></label>
+                    <input type="radio" id="redondeo_abajo" onclick="redondeo()" name="redondeo"
+                        class="input-radio formulario" value="2">
+                -->
+                    <input  type="range" id="redondeo" min='-0.04' max="0.04" step="0.01" >
+                    <span id="valor-redondeo">0.00</span>
+
+                    
+
+                </td>
             </tr>
 
 
 
         </table>
-        <div class="form-group" >
+        <div class="form-group">
             <br>
-            <button id="btn_guardar"  style="background-color:#5CB3ED !important;color:#fff !important"  type="button" class="btn btn-white btn-info btn-bold" onClick="guardar()"><i class="fa fa-save"></i> Guardar</button>
-            <button type="button" style="background-color:#5CB3ED !important;color:#fff !important" class="btn btn-white btn-info btn-bold" onClick="cancelar()">
+            <button id="btn_guardar" style="background-color:#5CB3ED !important;color:#fff !important" type="button"
+                class="btn btn-white btn-info btn-bold" onClick="guardar()"><i class="fa fa-save"></i> Guardar</button>
+            <button type="button" style="background-color:#5CB3ED !important;color:#fff !important"
+                class="btn btn-white btn-info btn-bold" onClick="cancelar()">
                 <icon class=" ace-icon fa fa-times "></icon>Cancelar
             </button>
         </div>
@@ -278,7 +341,9 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
 
                     <table width="100%" style="font-size:12px; font-weight:bold;">
                         <tr>
-                            <td width="100%"><b></b><br><input placeholder="N° orden - Enter para buscar" style='width: 32%' id="ECbuscar-nro_orden" class="form-control numero" style="width:95%" autocomplete="off"></td>
+                            <td width="100%"><b></b><br><input placeholder="N° orden - Enter para buscar"
+                                    style='width: 32%' id="ECbuscar-nro_orden" class="form-control numero"
+                                    style="width:95%" autocomplete="off"></td>
 
                         </tr>
                     </table>
@@ -302,7 +367,8 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
                     </div>
                     <div style="float:right;width:65%">
                         <h4>Detalles</h4>
-                        <table id="IdTblECbuscardetalle" class="table table-responsive table-bordered table-striped text-left">
+                        <table id="IdTblECbuscardetalle"
+                            class="table table-responsive table-bordered table-striped text-left">
                             <thead>
                                 <tr class="bg-secondary text-white">
                                     <Th>N°</Th>
@@ -321,7 +387,8 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="" class="btn btn-white btn-info btn-bold " onClick="LlenarDatos()"> Aceptar</button>
+                <button type="button" id="" class="btn btn-white btn-info btn-bold " onClick="LlenarDatos()">
+                    Aceptar</button>
                 <button type="button" class="btn btn-white btn-info btn-bold " data-dismiss="modal"> Cancelar</button>
             </div>
         </div>
@@ -352,17 +419,27 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
                         <input type="hidden" id="dividir-fila">
 
                         <td width="15%"><b>Precio (S/.)</b>
-                            <input type="text" id="dividir-precio" style="width:95%" class="form-control numero" value="" autocomplete="off"></td>
+                            <input type="text" id="dividir-precio" style="width:95%" class="form-control numero"
+                                value="" autocomplete="off">
+                        </td>
 
                         <td width="10%"><b>Cantidad</b>
-                            <input type="number" id="dividir-cantidad" style="width:95%" class="form-control numero" value="" autocomplete="off"></td>
+                            <input type="number" id="dividir-cantidad" style="width:95%" class="form-control numero"
+                                value="" autocomplete="off">
+                        </td>
                         <td width="15%"><b>Prec. anterior(S/.)</b>
-                            <input type="text" id="dividir-precio_anterior" disabled="" value="0.00" style="width:95%" class="form-control numero" autocomplete="off"></td>
+                            <input type="text" id="dividir-precio_anterior" disabled="" value="0.00" style="width:95%"
+                                class="form-control numero" autocomplete="off">
+                        </td>
                         <td width="15%"><b>Vencimiento</b>
-                            <input type="date" id="dividir-fecha_vencimiento" style="width:95%" class='form-control' value="" autocomplete="off"></td>
+                            <input type="date" id="dividir-fecha_vencimiento" style="width:95%" class='form-control'
+                                value="" autocomplete="off">
+                        </td>
 
                         <td width="15%"><b>N° lote</b>
-                            <input type="text" id="dividir-nro_lote" style="width:95%" class="form-control numero" autocomplete="off"></td>
+                            <input type="text" id="dividir-nro_lote" style="width:95%" class="form-control numero"
+                                autocomplete="off">
+                        </td>
                         <td width="15%"><b>Bonificación</b>
                             <select id='dividir-bonificacion' class=" form-control">
                                 <option value="">Seleccione</option>
@@ -373,7 +450,8 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
                         <td width="2%"></td>
                         <td width="10%">
                             <br>
-                            <button type="button" style="width:95%" class="btn btn-white btn-info btn-bold" onClick="DividirAñadirDetalle()"><i class='fa fa-plus'></i></button>
+                            <button type="button" style="width:95%" class="btn btn-white btn-info btn-bold"
+                                onClick="DividirAñadirDetalle()"><i class='fa fa-plus'></i></button>
 
                         <td>
                     </tr>
@@ -434,7 +512,8 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
 
             </div>
             <div class="modal-footer">
-                <button type="button" id="dividir-btn_añadir" class="btn btn-white btn-info btn-bold" onClick="DividirAñadirACompra()"> Aceptar</button>
+                <button type="button" id="dividir-btn_añadir" class="btn btn-white btn-info btn-bold"
+                    onClick="DividirAñadirACompra()"> Aceptar</button>
                 <button type="button" class="btn btn-white btn-info btn-bold" data-dismiss="modal"> Cancelar</button>
             </div>
         </div>
@@ -452,16 +531,16 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
 
 
 <style>
-    .bodycontainer {
-        max-height: 340px;
-        width: 100%;
-        margin: 0;
-        overflow-y: auto;
-        height: 340px;
-    }
+.bodycontainer {
+    max-height: 340px;
+    width: 100%;
+    margin: 0;
+    overflow-y: auto;
+    height: 340px;
+}
 
-    .table-scrollable {
-        margin: 0;
-        padding: 0;
-    }
+.table-scrollable {
+    margin: 0;
+    padding: 0;
+}
 </style>

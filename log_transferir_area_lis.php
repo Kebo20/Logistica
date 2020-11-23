@@ -1,14 +1,14 @@
 <div class="page-header" style="background-color:#EFF3F8; margin:0">
     <h1><i class="menu-icon"><img src="imagenes/grupo_user.png" style="border:0;" height="25" width="25"></i>
-        <span id="Titulo" style="font-size:13px; font-weight:bold">LOTES </span>
+        <span id="Titulo" style="font-size:13px; font-weight:bold">Transferencias a areas </span>
 
     </h1>
 
 </div>
 <?php
-require_once 'cado/ClaseContabilidad.php';
-$osucursal = new Contabilidad();
-$lista_sucursales = $osucursal->ListarTodoSucursal();
+require_once 'cado/ClaseLogistica.php';
+$olog = new Logistica();
+$lista_areas = $olog->ListarAreas();
 
 
 ?>
@@ -21,11 +21,12 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
         <thead>
             <tr>
                 <th width="">N°</th>
-                <th>Nro</th>
+                <th>Fecha</th>
+                <th>Lote</th>
                 <th>Producto</th>
-                <th>Cant.</th>
-                <th>Unid.</th>
-                <th>Fecha venc.</th>
+                <th>Cantidad</th>
+                <th>Unidad</th>
+                <th>Almacen</th>
 
             </tr>
         </thead>
@@ -45,27 +46,22 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
         <tr>
             
 
-            <td width="35%">
-
-                <select onchange="javascript:Listar()" id="id_cmb_suc" class='form-control' style="width:90%">
-                    <option value="">Seleccione sucursal</option>
-                    <?php foreach ($lista_sucursales as $s) { ?>
-                    <option value="<?= $s[0] ?>"><?= $s[1] ?> - <?= $s["nombre_empresa"] ?></option>
-                    <?php } ?>
-
-                </select>
-            </td>
+          
 
 
             <td width="35%">
-                <select onchange="javascript:Listar()" id="id_cmb_alm" class=" input" style="width:90%">
-                    <option value="">Seleccione almacén</option>
+                
+                <select onchange="javascript:Listar()" id="id_cmb_area" class="form-control " style="width:95%">
+                        <option value="">Seleccione</option>
+                        <?php foreach ($lista_areas as $s) { ?>
+                            <option value="<?= $s[0] ?>"><?= $s[1] ?></option>
+                        <?php } ?>
 
-                </select>
+                    </select>
             </td>
 
             <td width="40%"><span class="input-icon" style="width:90%">
-                    <input type="text" id="buscar" placeholder=" Buscar lote" class="form-control"
+                    <input type="text" id="buscar" placeholder=" Buscar por nombre de producto o lote" class="form-control"
                         onkeyup="javascript:Listar()" autocomplete="off" />
                     <i class="ace-icon fa fa-search nav-search-icon"></i>
                 </span></td>
@@ -77,7 +73,7 @@ $lista_sucursales = $osucursal->ListarTodoSucursal();
 
 
 
-<script src='js/log_lote.js'></script>
+<script src='js/log_transferir_area_lis.js'></script>
 
 
 

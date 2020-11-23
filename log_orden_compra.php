@@ -10,7 +10,7 @@ require_once('cado/ClaseLogistica.php');
 
 
 $olog = new Logistica();
-$lista_productos = $olog->ListarProductoLog("", 0, 1000);
+$lista_productos = $olog->ListarProductoLog("","", 0, 1000);
 require_once('cado/ClaseContabilidad.php');
 
 $osucursal = new Contabilidad();
@@ -89,7 +89,7 @@ $lista_categorias = $olog->ListarCategoriaProducto('', 0, 1000);
     <table width="81%" style="font-size:12px; font-weight:bold;">
         <tr>
 
-            <td width="30%"><b>N° orden</b><input type="number" id="OCnro" class="input numero" value="" style="width:95%" autocomplete="off"></td>
+            <td width="30%"><b>N° orden</b><input type="text" id="OCnro" class="input " value="" style="width:95%" autocomplete="off"></td>
             <td width="30%"><b>Fecha</b><input type="date" id="OCfecha" class='form-control' value="" style="width:95%" autocomplete="off"></td>
 
 
@@ -245,7 +245,7 @@ $lista_categorias = $olog->ListarCategoriaProducto('', 0, 1000);
                 <br>
                 <table width="100%" style="font-size:12px; font-weight:bold;">
                     <tr>
-                        <td width="20%"><b>N° orden</b><input type="text" id="OCbuscar-nro_orden" class="input numero" value="" style="width:97%" autocomplete="off"></td>
+                        <td width="20%"><b>N° orden</b><input type="text" id="OCbuscar-nro_orden" class="input " value="" style="width:97%" autocomplete="off"></td>
                         <td width="20%"><b>Fecha</b><input type="date" id="OCbuscar-fecha" class='form-control' value="" style="width:97%" autocomplete="off"></td>
 
 

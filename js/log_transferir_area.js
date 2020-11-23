@@ -1,0 +1,223 @@
+$(document).ready(function () {
+
+
+
+    var stock;
+    var unidad;
+
+    var $sucursal_org = $("#TAsuc_org").select2({
+        dropdownAutoWidth: true,
+        width: '97%'
+    });
+
+
+    var $almacen_org = $("#TAalm_org").select2({
+        dropdownAutoWidth: true,
+        width: '97%'
+    });
+
+    var $area = $("#TAarea").select2({
+        dropdownAutoWidth: true,
+        width: '97%'
+    });
+ 
+
+    var $producto = $("#TAproducto").select2({
+        dropdownAutoWidth: true,
+        width: '99%'
+    });
+
+
+
+
+
+    $('.numero').on("keypress", function () {
+        if (event.keyCode > 47 && event.keyCode < 60 || event.keyCode == 46) {
+
+        } else {
+            event.preventDefault();
+        }
+
+    });
+
+});
+
+
+$("#TAsuc_org").change(function () {
+    if ($("#TAsuc_org").val() != "") {
+        almacenxsucursal1()
+        setTimeout(function () {
+            $("#TAalm_org").select2('open');
+
+        }, 100);
+    }
+});
+$("#TAalm_org").change(function () {
+    if ($("#TAalm_org").val() != "") {
+
+        setTimeout(function () {
+            $("#TAsuc_des").select2('open');
+        }, 100);
+        setTimeout(function () {
+            LotexAlmacen()
+        }, 600);
+    }
+});
+
+
+
+function almacenxsucursal1() {
+    $("#TAalm_org").html("");
+    $.post("controlador/Clogistica.php?op=LISTAR_ALMxSUC", {
+        sucursal: $("#TAsuc_org").val(),
+    }, function (data) {
+
+        $("#TAalm_org").html(data);
+        // console.log(data);
+
+    });
+}
+
+
+function LotexAlmacen() {
+    $("#TAproducto").html("");
+    $.post("controlador/Clogistica.php?op=LISTAR_LOTExALM", {
+        almacen: $("#TAalm_org").val(),
+    }, function (data) {
+
+        $("#TAproducto").html(data);
+        // console.log(data);
+
+    });
+}
+
+
+
+
+
+
+
+$("#TAproducto").change(function () {
+    if ($("#TAproducto").val() != "") {
+        MostrarStockUnidad()
+        $("#TAcantidad").focus()
+    }
+});
+
+
+$("#TAfraccionar").change(function () {
+
+    MostrarStockUnidad()
+
+
+    // console.log(stock)
+    //console.log(unidad)
+
+
+});
+
+
+function MostrarStockUnidad() {
+
+    $.post("controlador/Clogistica.php?op=PRODUCTOxLOTE", {
+        lote: $("#TAproducto").val(),
+    }, function (data) {
+
+
+        stock = data.stock
+
+        $("#TAstock").val(stock);
+        $("#TAunidad").val(data.unidad_lote);
+
+
+
+
+    }, 'JSON');
+
+
+
+}
+
+$("#TAcantidad").change(function () {
+    if ($("#TAcantidad").val() > parseInt(stock)) {
+        swal("Cantidad excede el stock", "", "error")
+        $("#TAcantidad").val("")
+        $("#TAcantidad").focus();
+        return false
+    }
+});
+
+
+function Transferir() {
+
+    if ($("#TAalm_org").val() == "") {
+        swal("Campo requerido", "Seleccione un almacén de origen", "warning");
+        setTimeout(function () {
+            $("#TAalm_org").select2('open');
+        }, 200);
+        return false;
+    }
+
+    if ($("#TAarea").val() == "") {
+        swal("Campo requerido", "Seleccione un área de destino", "warning");
+        setTimeout(function () {
+            $("#TAarea").select2('open');
+        }, 200);
+        return false;
+    }
+
+   
+
+
+    if ($("#TAproducto").val() == "") {
+        swal("Campo requerido", "Seleccione un producto", "warning");
+        setTimeout(function () {
+            $("#TAproducto").select2('open');
+        }, 200);
+        return false;
+    }
+
+    if ($("#TAcantidad").val() == "") {
+        swal("Campo requerido", "Ingrese una cantidad", "warning");
+
+        $("#TAcantidad").focus();
+
+        return false;
+    }
+
+
+    if ($("#TAcantidad").val() > parseInt(stock)) {
+        swal("Cantidad excede el stock", "", "error")
+        $("#TAcantidad").val("")
+        $("#TAcantidad").focus();
+        return false
+    }
+
+
+    $.post("controlador/Clogistica.php?op=TRANSFERIR_AREA", {
+
+
+        almacen_origen: $("#TAalm_org").val(),
+        area: $("#TAarea").val(),
+
+        cantidad: $("#TAcantidad").val(),
+        lote: $("#TAproducto").val()
+
+
+
+    }, function (data) {
+
+        if (data == 1) {
+            swal("Correcto", "Orden registrada correctamente", "success");
+        } else {
+            swal("Error", "Orden no registrada ", "error");
+        }
+        $("#TAalm_org,#TAarea").html("<option value=''>Seleccione</option>");
+        $("#TAsuc_org,#TAsuc_des,#TAalm_org,#TAarea,#TAproducto,#TAcantidad,#TAstock,#TAunidad").val("").change()
+        stock = ''
+        unidad = ''
+        console.log(data);
+    });
+
+
+}

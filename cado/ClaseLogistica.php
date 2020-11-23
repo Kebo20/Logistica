@@ -168,26 +168,22 @@ class Logistica
     }
 
 
-    function ListarProductoLog($q, $inicio, $numero_filas)
+    function ListarProductoLog($q,$id_categoria, $inicio, $numero_filas)
     {
         $ocado = new cado();
         $sql = "select p.*,c.nombre as categoria,pf.nombre  as nombre_producto_fraccion,IF(p.tipo_producto='0','PRODUCTO','SERVICIO') as tipo ,u.codigo as codigo_unidad,u.descripcion as descripcion_unidad from log_producto p 
         inner join log_categoria_producto c on c.id=p.id_categoria left join log_producto pf on p.id_producto_fraccion=pf.id left join log_codigo_unidad_medida u on p.unidad=u.id
-         where p.nombre like '%$q%' and p.estado=0  order by p.nombre asc  limit $inicio,$numero_filas";
+         where p.nombre like '%$q%' and p.estado=0 " ;
+
+         if($id_categoria !='' && $id_categoria!=0){
+         $sql.=" and p.id_categoria=$id_categoria"; 
+    }
+         $sql.=" order by p.id desc  limit $inicio,$numero_filas";
         $ejecutar = $ocado->ejecutar($sql);
         return $ejecutar;
     }
 
-    function TotalProducto($q)
-    {
-        $ocado = new cado();
-
-        $sql = "select count(*) from log_producto where nombre like '%$q%' and estado=0 ";
-
-        $ejecutar = $ocado->ejecutar($sql);
-        return $ejecutar;
-    }
-
+   
     function ListarSoloProductos()
     {
         $ocado = new cado();
@@ -408,6 +404,16 @@ class Logistica
 
     //FUNCIONES PARA ORDEN DE COMPRA
 
+    function NroOrdCompra(){
+   
+        $ocado = new cado();
+        $sql = "select count(*) from log_orden_compra";
+        $ejecutar = $ocado->ejecutar($sql);
+        $year=date('Y');
+
+        return $year.'-'.$ejecutar->fetch()[0];
+    }
+
     function RegistrarOrdenCompra($detalles_orden_compra, $nro, $fecha, $sucursal, $almacen, $referencia, $tipo)
     {
         $ocado = new cado();
@@ -415,8 +421,11 @@ class Logistica
             $ocado = new cado();
             $cn = $ocado->conectar();
             $cn->beginTransaction();
-            $usuario = "1";
+            $usuario = "17";
+
+           // $usuario = "1";
             $date = date('d-m-Y H:i:s');
+            $nro=$this->NroOrdCompra();
             $sql = "insert into log_orden_compra(numero,fecha,id_sucursal,id_almacen,referencia,id_usuario,fecha_sistema,estado,tipo) "
                 . "values('$nro','$fecha','$sucursal','$almacen','$referencia','$usuario','$date','pendiente','$tipo');";
 
@@ -456,7 +465,7 @@ class Logistica
             $ocado = new cado();
             $cn = $ocado->conectar();
             $cn->beginTransaction();
-            $usuario = "1";
+            $usuario = "17";
             $date = date('d-m-Y H:i:s');
             $sql = "update  log_orden_compra set numero='$nro' , fecha='$fecha', id_sucursal='$sucursal' , id_almacen='$almacen',"
                 . "referencia='$referencia',id_usuario='$usuario',fecha_sistema='$date',tipo='$tipo' "
@@ -665,15 +674,15 @@ class Logistica
         $nro_dias,
         $id_orden,
         $id_almacen,
-        $igv_detalle
+        $igv_detalle,
+        $redondeo
     ) {
         $ocado = new cado();
         try {
             $ocado = new cado();
             $cn = $ocado->conectar();
             $cn->beginTransaction();
-            //$usuario = $_SESSION['S_iduser'];
-            $usuario = "1";
+            $usuario = "17";
             $date = date('d-m-Y H:i:s');
 
             //Si compra viene de orden 
@@ -706,8 +715,9 @@ class Logistica
 
 
             if ($tipo_afectacion == '1' && $igv_detalle == '1') {
+
                 $total = $sub_total;
-                $monto_igv = $total * $this->IGV/(1+$this->IGV);
+                $monto_igv = $total * $this->IGV / (1 + $this->IGV);
                 $monto_sin_igv = $total - $monto_igv;
                 $igv = $this->IGV;
             }
@@ -731,7 +741,7 @@ class Logistica
             $sql = "insert into log_compra(fecha,id_usuario,id_proveedor,tipo_documento,tipo_afectacion,monto_sin_igv,igv,monto_igv,"
                 . "total,nota_credito,fecha_sistema,tipo_compra,serie,nro_documento,nro_dias) values('$fecha','$usuario','$proveedor',"
                 . "'$tipo_documento','$tipo_afectacion',"
-                . "'" . $this->redondear_dos_decimal($monto_sin_igv) . "','$igv','" . $this->redondear_dos_decimal($monto_igv) . "','" . $this->redondear_dos_decimal($total) . "','$nota_credito','$date','$tipo_compra','$serie','$nro_documento','$nro_dias');";
+                . "'" . $this->redondear_dos_decimal($monto_sin_igv) . "','$igv','" . $this->redondear_dos_decimal($monto_igv) . "','" . ($this->redondear_dos_decimal($total + $redondeo)) . "','$nota_credito','$date','$tipo_compra','$serie','$nro_documento','$nro_dias');";
             //DETALLES
             foreach ($detalles as $detalle) {
 
@@ -746,17 +756,21 @@ class Logistica
                 $precio_sin_igv = $detalle['precio_sin_igv'];
                 $monto_igv = $detalle['monto_igv'];
                 $subtotal = $detalle['subtotal'];
-                // $precio_anterior = $detalle['precio_anterior'];
+                $precio_anterior = $detalle['precio_anterior'];
 
                 //Si es producto y no servicio
                 $producto = $this->ListarProductoLogxid($id_producto)->fetch();
                 $unidad = $producto['unidad'];
                 $id_categoria = $producto['id_categoria'];
 
+                $lote = '0';
+                $nro_orden = '';
+
                 //Cuando es producto, no servicio
                 if ($producto['tipo_producto'] == '0') {
 
                     $id_lote = $this->ListarLotexNroProAlm($nro_lote, $id_producto, $id_almacen)->fetch();
+
                     //Si lote no existe insertamos sino lo actualizamos 
                     if ($id_lote[0] == '') {
                         $sql .= "insert into log_lote(nro,id_producto,cantidad,unidad,fecha_vencimiento,id_almacen)
@@ -765,12 +779,6 @@ class Logistica
                     } else {
                         $lote = $id_lote[0];
                         $sql .= "update log_lote set cantidad=cantidad+$cantidad  where id=" . $id_lote[0] . ";";
-                    }
-
-                    //precio anterior
-                    $precio_anterior = $this->UltimaPrecioCompra($id_producto);
-                    if ($precio_anterior == '' || $precio_anterior == '0' || $precio_anterior == null) {
-                        $precio_anterior = '0.00';
                     }
 
 
@@ -796,6 +804,12 @@ class Logistica
                         where id_orden_compra='$id_orden'  and id_producto='$id_producto' ;";
                 }
 
+                //precio anterior
+                // $precio_anterior = $this->UltimaPrecioCompra($id_producto);
+                //if ($precio_anterior == '' || $precio_anterior == '0' || $precio_anterior == null) {
+                //  $precio_anterior = '0.00';
+                // }
+
                 //Insertar detalles de compra
                 $sql .= "insert into log_compra_detalle(id_compra,id_producto,bonificacion,id_lote,fecha_vencimiento,cantidad,precio,"
                     . "precio_sin_igv,monto_igv,subtotal,precio_compra_ant,nro_orden)values((select max(id) from log_compra),'$id_producto',"
@@ -809,6 +823,7 @@ class Logistica
             //$return =$sql;
         } catch (PDOException $ex) {
             $cn->rollBack();
+
             $cn = null;
             //return = 0;
             $return = $ex->getMessage();
@@ -818,12 +833,76 @@ class Logistica
     }
 
 
-    function ListarCompra($q, $inicio, $numero_filas)
+    public function TotalySubtotalCompra( $detalles_compra,
+    $tipo_afectacion,
+    $igv_detalle,
+    $redondeo){
+
+
+            //CÁLCULO DEL DETALLE
+            $sub_total = 0;
+            foreach ($detalles_compra as $detalle) {
+
+                if ($igv_detalle == '1') { //FACT. AFECTA A IGV  
+                    $detalle['monto_igv'] = ($detalle['precio'] * $this->IGV) / (1 + $this->IGV);
+                    $detalle['precio_sin_igv'] = $detalle['precio'] - $detalle['monto_igv'];
+                } else {
+                    $detalle['monto_igv'] = $detalle['precio'] * $this->IGV;
+                    $detalle['precio_sin_igv'] = $detalle['precio'];
+                }
+                $detalle['subtotal'] = (($detalle['precio']) * $detalle['cantidad']);
+                if ($detalle['bonificacion'] == '0') {
+                    $sub_total =  $sub_total + $detalle['subtotal'];
+                } 
+
+            }
+
+            //CÁLCULO DEL TOTAL
+
+
+            if ($tipo_afectacion == '1' && $igv_detalle == '1') {
+                
+                $total=$sub_total;
+                $monto_igv = $total * $this->IGV/(1+$this->IGV);
+                $monto_sin_igv = $total - $monto_igv;
+                $igv = $this->IGV;
+            }
+
+            if ($tipo_afectacion == '1' && $igv_detalle == '0') {
+                $monto_sin_igv = $sub_total;
+                $monto_igv = $monto_sin_igv * $this->IGV;
+                $total = $monto_sin_igv + $monto_igv;
+                $igv = $this->IGV;
+            }
+
+            if ($tipo_afectacion == '2') {
+                $monto_sin_igv = $sub_total;
+                $monto_igv = 0;
+                $total = $monto_sin_igv + $monto_igv;
+                $igv = $this->IGV;
+            }
+
+            $totales=array();
+            $totales['total']=$this->redondear_dos_decimal($total+$redondeo);
+            $totales['monto_sin_igv']=$this->redondear_dos_decimal($monto_sin_igv);
+            $totales['monto_igv']=$this->redondear_dos_decimal($monto_igv);
+
+            return $totales;
+
+
+    }
+
+    function ListarCompra($q,$fecha_inicio,$fecha_fin, $inicio, $numero_filas)
     {
         $ocado = new cado();
-        $sql = "select c.fecha,u.usuario,prov.nombre,c.tipo_documento,ta.descripcion,CAST(c.monto_sin_igv as decimal(18,2)),CAST(c.igv as decimal(18,2)),CAST(c.monto_igv as decimal(18,2)),"
-            . "c.total ,c.id,c.nota_credito,c.fecha_sistema,c.tipo_compra,c.nro_documento,c.nro_dias,c.serie from log_compra c inner join conf_usuario u on c.id_usuario=u.id inner join"
-            . " admin_tipo_afectacion_igv ta on ta.id=c.tipo_afectacion inner join log_proveedor prov on prov.id=c.id_proveedor where c.nro_documento like '%$q%' order by c.fecha desc  limit $inicio,$numero_filas ;";
+        $where='';
+        if($fecha_inicio!='' && $fecha_fin!=''){
+            $where="and c.fecha between '$fecha_inicio' and '$fecha_fin'";
+        }
+
+        $sql = "select c.fecha,u.nombre,prov.nombre,c.tipo_documento,ta.descripcion,CAST(c.monto_sin_igv as decimal(18,2)),CAST(c.igv as decimal(18,2)),CAST(c.monto_igv as decimal(18,2)),"
+            . "c.total ,c.id,c.nota_credito,c.fecha_sistema,c.tipo_compra,c.nro_documento,c.nro_dias,c.serie from log_compra c inner join usuario u on c.id_usuario=u.id inner join"
+            . " admin_tipo_afectacion_igv ta on ta.id=c.tipo_afectacion inner join log_proveedor prov on prov.id=c.id_proveedor where c.nro_documento like '%$q%' $where order by c.fecha desc  limit $inicio,$numero_filas ;";
         $ejecutar = $ocado->ejecutar($sql);
         return $ejecutar;
     }
@@ -832,7 +911,7 @@ class Logistica
     {
         $ocado = new cado();
 
-        $sql = "select count(*) from log_compra c inner join conf_usuario u on c.id_usuario=u.id inner join"
+        $sql = "select count(*) from log_compra c inner join usuario u on c.id_usuario=u.id inner join"
             . " admin_tipo_afectacion_igv ta on ta.id=c.tipo_afectacion where c.nro_documento like '%$q%' ";
 
 
@@ -846,7 +925,7 @@ class Logistica
     {
         $ocado = new cado();
         $sql = "select p.nombre,c.*,l.nro,c.nro_orden from log_compra_detalle c inner join log_producto p on c.id_producto=p.id 
-         inner join log_lote l on l.id=c.id_lote where id_compra=$compra";
+         left join log_lote l on l.id=c.id_lote where id_compra=$compra";
         $ejecutar = $ocado->ejecutar($sql);
         return $ejecutar;
     }
@@ -858,12 +937,11 @@ class Logistica
         return $ejecutar->fetch()['precio_sin_igv'];
     }
     // FUNCIONES PARA EL MANTENEDOR LOTE
-    function ListarLote($nombre, $inicio, $numero_filas)
+    function ListarLote($nombre,$id_almacen, $inicio, $numero_filas)
     {
         $ocado = new cado();
-        $sql = "SELECT l.nro,p.nombre,l.cantidad,l.fecha_vencimiento as fecha_vencimiento,a.nombre as almacen,s.nombre as sucursal,lcu.descripcion as unidad from log_lote l
-         inner join log_producto p on l.id_producto=p.id inner join log_almacen a on a.id=l.id_almacen inner join cont_sucursal s on s.id=a.id_sucursal inner join log_codigo_unidad_medida lcu on lcu.id=p.unidad  "
-            . "where l.nro like '%$nombre%' or p.nombre like '%$nombre%' or l.fecha_vencimiento like '%$nombre%' order by p.id desc  limit $inicio,$numero_filas  ";
+        $sql = "SELECT l.nro,p.nombre,l.cantidad,l.fecha_vencimiento as fecha_vencimiento,lcu.descripcion as unidad from log_lote l
+         inner join log_producto p on l.id_producto=p.id  inner join log_codigo_unidad_medida lcu on lcu.id=p.unidad where l.id_almacen=$id_almacen and (l.nro like '%$nombre%' or p.nombre like '%$nombre%' or l.fecha_vencimiento like '%$nombre%' ) order by p.id desc  limit $inicio,$numero_filas  ";
         $ejecutar = $ocado->ejecutar($sql);
         return $ejecutar;
     }
@@ -1053,8 +1131,8 @@ class Logistica
             $ocado = new cado();
             $cn = $ocado->conectar();
             $cn->beginTransaction();
-            //$usuario = $_SESSION['S_iduser'];
-            $usuario = "1";
+            $usuario = "17";
+            //$usuario = "1";
             $fecha = date('Y-m-d');
 
             //Lote de almacen de origen
@@ -1131,8 +1209,8 @@ class Logistica
             $ocado = new cado();
             $cn = $ocado->conectar();
             $cn->beginTransaction();
-            //$usuario = $_SESSION['S_iduser'];
-            $usuario = "1";
+            $usuario = "17";
+            //$usuario = "1";
             $fecha = date('Y-m-d');
 
             //Lote de almacen de origen
@@ -1844,5 +1922,96 @@ class Logistica
         $sql = "SELECT count(*) from log_compra_detalle cd inner join log_compra c on c.id=cd.id_compra where cd.id_producto=$id GROUP BY c.fecha ;  ";
         $ejecutar = $ocado->ejecutar($sql);
         return $ejecutar;
+    }
+
+    
+    function ListarAreas()
+    {
+        $ocado = new cado();
+        $sql = "SELECT *  from log_area where estado='0' order by nombre asc;  ";
+        $ejecutar = $ocado->ejecutar($sql);
+        return $ejecutar;
+    }
+
+    function ListarTrasferirArea($id_area, $nombre_producto)
+    {
+        $ocado = new cado();
+        $where="";
+        $limit="";
+        if ($id_area!="") {
+            $where .= " t.id_area=$id_area and";
+        }
+
+        if($nombre_producto=="" && $id_area==""){
+            $limit="limit 0,8";
+        }
+        
+
+        $sql = "SELECT t.fecha,l.nro as lote ,p.nombre as producto,u.descripcion as unidad,a.nombre as area,t.cantidad,al.nombre as almacen  from log_transferir_area t inner join log_producto p on p.id=t.id_producto
+        inner join log_lote l on l.id=t.id_lote inner join log_area a on a.id=t.id_area
+         inner join log_almacen al on al.id=t.id_almacen_origen inner join log_codigo_unidad_medida u on p.unidad=u.id
+         where $where ( p.nombre like '%$nombre_producto%' or l.nro  like  '%$nombre_producto%' ) order by t.fecha desc  $limit;  ";
+        $ejecutar = $ocado->ejecutar($sql);
+        return $ejecutar;
+    }
+
+    function TransferenciaArea($almacen_origen, $area, $cantidad, $id_lote)
+    {
+
+        try {
+            $ocado = new cado();
+            $cn = $ocado->conectar();
+            $cn->beginTransaction();
+            //$usuario = $_SESSION['S_iduser'];
+            $usuario = "17";
+            $fecha = date('Y-m-d');
+
+            //Lote de almacen de origen
+            $lote = $this->ListarLotexid($id_lote)->fetch();
+
+            //DISMINUYE  CANTIDAD EN LOTE DE ALMACEN DE ORIGEN
+            $sql = "update log_lote set cantidad=cantidad-$cantidad where id=$id_lote;";
+
+
+            //KARDEX 
+
+
+            $id_producto = $lote['id_producto'];
+            $producto = $this->ListarProductoLogxid($id_producto)->fetch();
+            $id_categoria = $producto['id_categoria'];
+
+
+            //KARDEX
+            $precio = $this->UltimaPrecioCompra($lote['id_producto']);
+
+            $costo_total = $precio * $cantidad;
+
+            //SALIDA
+            $sql .= "insert into log_kardex(tipo_movimiento,id_tipo_operacion,id_producto,id_categoria_producto,id_lote,precio,
+                  fecha,id_tipo_documento,nro_doc,unidad,cantidad,id_almacen,id_referencia,id_usuario,costo_total)"
+                . " values ('2','11','$id_producto','$id_categoria',$id_lote,'$precio','$fecha','',
+                '','$producto[3]','$cantidad','$almacen_origen','0','$usuario',$costo_total);";
+
+            //Lista de transferencias a alamacén
+
+            $sql .= "insert into log_transferir_area(fecha,id_producto,id_lote,cantidad,id_almacen_origen,id_usuario,id_area)"
+                . " values ('$fecha','$id_producto','$id_lote','$cantidad','$almacen_origen','$usuario','$area');";
+
+
+
+
+
+            $cn->prepare($sql)->execute();
+            $cn->commit();
+            $cn = null;
+            $return = 1;
+        } catch (PDOException $ex) {
+            $cn->rollBack();
+            $cn = null;
+            //$return = 0;
+            $return = $ex->getMessage();
+        }
+
+        return $return;
     }
 }

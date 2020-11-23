@@ -10,6 +10,8 @@ require_once('cado/ClaseLogistica.php');
 
 $olog = new Logistica();
 $lista_categorias = $olog->ListarCategoriaProducto("", 0, 1000);
+$lista_categorias2 = $olog->ListarCategoriaProducto("", 0, 1000);
+
 $lista_unidades = $olog->ListarUnidades();
 
 
@@ -49,12 +51,32 @@ $lista_unidades = $olog->ListarUnidades();
 <div class="page-header" style="background-color:#EFF3F8;padding-left:10px; padding-top:15px">
     <table width="100%">
         <tr>
-            <td width="40%"><span class="input-icon" style="width:90%">
-                    <input type="text" id="buscar" placeholder=" Buscar " class="form-control" onkeyup="javascript:Listar(1)" autocomplete="off" />
+        <td width="20%"> <button type="button" class="btn btn-xs" onclick="javascript:abrirModal()">Nuevo </button>
+            </td>
+            <td width="40%"><span class="input-icon" style="width:95%">
+                    <input type="text" id="buscar" placeholder=" Buscar por nombre " class="form-control"
+                        onkeyup="javascript:Listar(1)" autocomplete="off" />
                     <i class="ace-icon fa fa-search nav-search-icon"></i>
                 </span></td>
-            <td width="50%"> <button type="button" class="btn " onclick="javascript:abrirModal()">Nuevo </button>
+            <td width="30%">
+            <span class="input-icon" style="width:95%">
+                <select name="buscar_categoria"  onchange="javascript:Listar(1)"  required class="form-control" id="pro_buscar_categoria">
+                    <option value="">Buscar por categoría</option>
+                    <?php foreach ($lista_categorias2 as $s) { ?>
+
+                    <option value="<?= $s['id'] ?>"><?= $s['nombre'] ?></option>
+                    <?php } ?>
+
+                </select>
+            </span>
             </td>
+            
+            <td width="10%">
+                <div class="">
+                    <btn class="btn btn-white btn-info btn-bold " onclick="ReporteExcel()"><i class="fa fa-file-excel-o fa-6"></i> Excel</btn>
+                </div>
+            </td>
+            
         </tr>
     </table>
 </div>
@@ -75,7 +97,8 @@ $lista_unidades = $olog->ListarUnidades();
                 <form id="formEliminar">
                     <input type="hidden" name="id" id="eliminar">
                     <button type="button" class="btn btn-white btn-info btn-bold " data-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-white btn-info btn-bold  btn-danger waves-effect">Eliminar</button>
+                    <button type="submit"
+                        class="btn btn-white btn-info btn-bold  btn-danger waves-effect">Eliminar</button>
                 </form>
             </div>
 
@@ -90,7 +113,8 @@ $lista_unidades = $olog->ListarUnidades();
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title" style="color:#030"> <img src="imagenes/grupo_user.png" height="30" width="30" />
+                    <h4 class="modal-title" style="color:#030"> <img src="imagenes/grupo_user.png" height="30"
+                            width="30" />
                         &nbsp; REGISTRAR PRODUCTO</h4>
 
                 </div>
@@ -103,7 +127,8 @@ $lista_unidades = $olog->ListarUnidades();
                             <td width="50%"><b>Nombre</b><br>
                                 <input type="hidden" id="pro_id" name="id">
                                 <input type="hidden" id="pro_valor" name="valor">
-                                <input id="pro_nombre" name="nombre" required class="form-control"></td>
+                                <input id="pro_nombre" name="nombre" required class="form-control">
+                            </td>
                             <td>&nbsp;&nbsp;</td>
 
                             <td><b>Unidad</b><br>
@@ -113,7 +138,8 @@ $lista_unidades = $olog->ListarUnidades();
                                     <option value="">Seleccione</option>
                                     <?php foreach ($lista_unidades as $s) { ?>
 
-                                        <option value="<?= $s['id'] ?>"><?= $s['codigo'] . ' - ' . $s['descripcion'] ?></option>
+                                    <option value="<?= $s['id'] ?>"><?= $s['codigo'] . ' - ' . $s['descripcion'] ?>
+                                    </option>
                                     <?php } ?>
 
                                 </select>
@@ -144,10 +170,11 @@ $lista_unidades = $olog->ListarUnidades();
                                     <option value="">Seleccione</option>
                                     <?php foreach ($lista_categorias as $s) { ?>
 
-                                        <option value="<?= $s['id'] ?>"><?= $s['nombre'] ?></option>
+                                    <option value="<?= $s['id'] ?>"><?= $s['nombre'] ?></option>
                                     <?php } ?>
 
-                                </select></td>
+                                </select>
+                            </td>
                         </tr>
 
 
@@ -159,12 +186,14 @@ $lista_unidades = $olog->ListarUnidades();
                         <tr>
                             <td><b>Stock máximo</b><br>
 
-                                <input id="pro_stock_max" name="stock_max" required class="form-control"></td>
+                                <input id="pro_stock_max" name="stock_max" required class="form-control">
+                            </td>
 
                             <td>&nbsp;&nbsp;</td>
                             <td><b>Stock mínimo</b><br>
 
-                                <input id="pro_stock_min" name="stock_min" required class="form-control"></td>
+                                <input id="pro_stock_min" name="stock_min" required class="form-control">
+                            </td>
 
                         </tr>
 
@@ -175,7 +204,9 @@ $lista_unidades = $olog->ListarUnidades();
                         <tr>
 
                             <td rowspan="2" align="left"><b>¿Fraccionar?</b><br>
-                                <input type="checkbox" id="cbx_fraccion" onchange="ChangeFraccionar()" class="input-xs" style="height: 30px;"></td>
+                                <input type="checkbox" id="cbx_fraccion" onchange="ChangeFraccionar()" class="input-xs"
+                                    style="height: 30px;">
+                            </td>
                         </tr>
 
                         <tr>
@@ -187,11 +218,14 @@ $lista_unidades = $olog->ListarUnidades();
                         <tr id='tr_fraccion'>
                             <td><b>Cantidad fracción</b><br>
 
-                                <input type="number" id="pro_cantidad_fraccion" name="cantidad_fraccion" class="form-control numero"></td>
+                                <input type="number" id="pro_cantidad_fraccion" name="cantidad_fraccion"
+                                    class="form-control numero">
+                            </td>
 
                             <td>&nbsp;&nbsp;</td>
                             <td width="100%" colspan="3"><b>Producto fracción</b><br>
-                                <select id="pro_producto_fraccion" name="id_producto_fraccion" class="form-control " style="width: 95%">
+                                <select id="pro_producto_fraccion" name="id_producto_fraccion" class="form-control "
+                                    style="width: 95%">
                                     <option value="">Seleccione producto</option>
 
                                 </select>
@@ -224,16 +258,16 @@ $lista_unidades = $olog->ListarUnidades();
 
 
 <style>
-    .bodycontainer {
-        max-height: 340px;
-        width: 100%;
-        margin: 0;
-        overflow-y: auto;
-        height: 340px;
-    }
+.bodycontainer {
+    max-height: 340px;
+    width: 100%;
+    margin: 0;
+    overflow-y: auto;
+    height: 340px;
+}
 
-    .table-scrollable {
-        margin: 0;
-        padding: 0;
-    }
+.table-scrollable {
+    margin: 0;
+    padding: 0;
+}
 </style>

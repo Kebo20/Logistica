@@ -1,21 +1,23 @@
 var $categoria = $("#pro_categoria").select2({ dropdownAutoWidth: true, width: '100%' });
+var $categoria_buscar = $("#pro_buscar_categoria").select2({ dropdownAutoWidth: true, width: '100%' });
+
 var $unidad = $("#pro_unidad").select2({ dropdownAutoWidth: true, width: '100%' });
 
 var $id_producto_fraccion = $("#pro_producto_fraccion").select2({ dropdownAutoWidth: true, width: '100%' });
 
 var $tipo = $("#pro_tipo").select2({ dropdownAutoWidth: true, width: '100%' });
 ListarProductosFraccion()
-Listar(1);
+Listar();
 $("#tr_fraccion").hide()
 
-function Listar(pagina) {
+function Listar() {
 
     //  $("#lista").html("<tr><td class='text-center' colspan='5'>Cargando ...<td></tr>");
     //    $("#paginacion").html("<span class='btn btn-info'>Anterior</span> <span class='btn btn-success'>1</span> <span class='btn btn-info'>Siguiente</span>")
 
     $.ajax({
 
-        url: 'controlador/Clogistica.php?op=LIS_PRO&q=' + $("#buscar").val() + "&pagina=" + pagina,
+        url: 'controlador/Clogistica.php?op=LIS_PRO&q=' + $("#buscar").val() + "&id_categoria="+$("#pro_buscar_categoria").val(),
         type: "POST",
         dataType: "json",
         contetnType:"application_json; charset=utf-8",
@@ -41,48 +43,6 @@ function Listar(pagina) {
 
 
             })
-
-            $.ajax({
-
-                url: 'controlador/Clogistica.php?op=PAG_PRO&q=' + $("#buscar").val(),
-                type: "POST",
-                dataType: "json",
-
-                success: function (cont) {
-
-                    $("#paginacion").html("");
-                    if (cont == 0) {
-                        $("#lista").html("<td class='text-center' colspan='10'>No se encontraron resultados</tr>");
-                        return false
-                    }
-                    if (pagina > 1) {
-                        $("#paginacion").append("<span class='btn btn-xs ' onclick='Listar(" + (pagina - 1) + ")' ><b><icon class='fa fa-chevron-left'></icon></span>");
-
-                    }
-
-                    for (var i = 1; i <= cont; i++) {
-
-                        $("#paginacion").append("<span class='btn btn-xs ' id='pagina" + i + "' onclick='Listar(" + i + ")' >" + i + "</span>");
-
-                    }
-
-                    if (pagina < cont) {
-                        $("#paginacion").append("<span class='btn btn-xs 'onclick='Listar(" + (pagina + 1) + ")'><b><icon class='fa fa-chevron-right'></icon></span>");
-
-                    }
-
-                    $("#pagina" + pagina).removeAttr("class");
-                    $("#pagina" + pagina).attr("class", "btn btn-xs btn-info");
-                },
-
-                error: function (e) {
-                    console.log(e)
-                    $("#lista").html("<td class='text-center' colspan='10'>No se encontraron resultados</tr>");
-
-                    $("#paginacion").html("");
-                }
-            });
-
 
         },
 
@@ -297,3 +257,9 @@ $("#formEliminar").on("submit", function (e) {
         }
     });
 });
+
+
+function ReporteExcel() {
+    
+    window.location = 'reporte_excel_productos.php?q=' + $("#buscar").val() + "&id_categoria="+$("#pro_buscar_categoria").val()
+}

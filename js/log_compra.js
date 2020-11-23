@@ -8,7 +8,7 @@ function Listar(pagina) {
 
     $.ajax({
 
-        url: 'controlador/Clogistica.php?op=LIS_COM&q=' + $("#buscar").val() + "&pagina=" + pagina,
+        url: 'controlador/Clogistica.php?op=LIS_COM&q=' + $("#buscar").val()+'&fecha_inicio='+$("#fecha_inicio").val()+'&fecha_fin='+$("#fecha_fin").val() ,
         type: "POST",
         dataType: "json",
 
@@ -38,47 +38,6 @@ function Listar(pagina) {
                +"</tr>");
 
             })
-
-            $.ajax({
-
-                url: 'controlador/Clogistica.php?op=PAG_COM&q=' + $("#buscar").val(),
-                type: "POST",
-                dataType: "json",
-
-                success: function (cont) {
-
-                    $("#paginacion").html("");
-                    if (cont == 0) {
-                        $("#lista").html("<td class='text-center' colspan='15'>No se encontraron resultados</tr>");
-                        return false
-                    }
-                    if (pagina > 1) {
-                        $("#paginacion").append("<span class='btn btn-xs ' onclick='Listar(" + (pagina - 1) + ")' ><b><icon class='fa fa-chevron-left'></icon></span>");
-
-                    }
-
-                    for (var i = 1; i <= cont; i++) {
-
-                        $("#paginacion").append("<span class='btn btn-xs ' id='pagina" + i + "' onclick='Listar(" + i + ")' >" + i + "</span>");
-
-                    }
-
-                    if (pagina < cont) {
-                        $("#paginacion").append("<span class='btn btn-xs 'onclick='Listar(" + (pagina + 1) + ")'><b><icon class=' fa fa-chevron-right'></icon></span>");
-
-                    }
-
-                    $("#pagina" + pagina).removeAttr("class");
-                    $("#pagina" + pagina).attr("class", "btn btn-xs btn-info");
-                },
-
-                error: function (e) {
-                    console.log(e)
-                    $("#lista").html("<td class='text-center' colspan='15'>No se encontraron resultados</tr>");
-
-                    $("#paginacion").html("");
-                }
-            });
 
 
         },
